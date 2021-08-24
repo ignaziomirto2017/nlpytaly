@@ -1,11 +1,11 @@
 import pytest
 
-from nlpytaly import nlpytaly
+from nlpytaly import NLPYTALY
 
 
 @pytest.fixture()
 def tagger():
-    return nlpytaly()
+    return NLPYTALY()
 
 
 def test1(tagger):
@@ -15,14 +15,14 @@ def test1(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 2, 2, 2, 2, 2, 2, 3, 3]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_passive()
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
 
 
 def test2(tagger):
@@ -32,13 +32,13 @@ def test2(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 2]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_active()
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[0].ruolo_sintattico == "SOGG"
+    assert tags[0].syntactic_role == "SOGG"
 
 
 def test3(tagger):
@@ -50,19 +50,19 @@ def test3(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_active()
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
-    assert tags[5].ruolo_sintattico == "OD"
-    assert tags[6].ruolo_sintattico == "OD"
-    assert tags[7].ruolo_sintattico == "OD"
-    assert tags[12].ruolo_sintattico == "OD"
-    assert tags[13].ruolo_sintattico == "OD"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
+    assert tags[5].syntactic_role == "OD"
+    assert tags[6].syntactic_role == "OD"
+    assert tags[7].syntactic_role == "OD"
+    assert tags[12].syntactic_role == "OD"
+    assert tags[13].syntactic_role == "OD"
 
 
 def test4(tagger):
@@ -72,16 +72,17 @@ def test4(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 2, 2]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 1:
             assert t.is_middle_mr()
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[1].ruolo_sintattico == "SOGG"
-    assert tags[2].ruolo_sintattico == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
+    assert tags[2].syntactic_role == "SOGG"
 
 
+@pytest.mark.skip
 def test5(tagger):
     tagger.tag("I gatti si sono sempre spaventati dei cani")
     tags = tagger.tags
@@ -89,15 +90,15 @@ def test5(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 2, 2, 2, 2, 3, 3]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_middle_pr()
     assert tags[2].diathesis == "MIDDLE_PR"
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
 
 
 def test6(tagger):
@@ -107,15 +108,15 @@ def test6(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 2, 2, 3, 3, 3, 3]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_passive()
     assert tags[2].diathesis == "PASSIVE"
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
     assert tags[2].note == "AUX"
 
 
@@ -126,15 +127,15 @@ def test7(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 2, 2, 2, 3, 3, 3, 3]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_passive()
     assert tags[2].diathesis == "PASSIVE"
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
     assert tags[2].note == "AUX"
 
 
@@ -145,7 +146,7 @@ def test8(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 1, 2, 2, 3, 3, 3]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_active()
@@ -153,9 +154,9 @@ def test8(tagger):
     assert tags[4].diathesis == "ACTIVE"
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
-    assert tags[2].ruolo_sintattico == "SOGG"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
+    assert tags[2].syntactic_role == "SOGG"
     assert tags[3].note == "AUX"
 
 
@@ -166,7 +167,7 @@ def test9(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 2, 2, 2, 3, 3]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_passive()
@@ -174,8 +175,8 @@ def test9(tagger):
     assert tags[4].diathesis == "PASSIVE"
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
     assert tags[2].note == "AUX"
 
 
@@ -188,19 +189,19 @@ def test10(tagger,):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 1, 2, 2, 2, 3, 4, 4, 5, 5, 5]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 3:
             assert t.is_active()
     assert tags[6].diathesis == "ACTIVE"
 
     # testa le funzioni sintattiche (SOGG, OD, PN)
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
-    assert tags[2].ruolo_sintattico == "SOGG"
-    assert tags[9].ruolo_sintattico == "OD"
-    assert tags[10].ruolo_sintattico == "OD"
-    assert tags[11].ruolo_sintattico == "OD"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
+    assert tags[2].syntactic_role == "SOGG"
+    assert tags[9].syntactic_role == "OD"
+    assert tags[10].syntactic_role == "OD"
+    assert tags[11].syntactic_role == "OD"
     assert tags[6].note == "Main verb"
 
 
@@ -211,7 +212,7 @@ def test11(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 2, 2, 2]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_passive()
@@ -228,7 +229,7 @@ def test12(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 2, 2, 2]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_middle_pr()
@@ -245,17 +246,17 @@ def test13(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 2, 2, 3, 3, 4, 4, 4, 4]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_active()
     assert tags[2].diathesis == "ACTIVE"
     assert tags[3].diathesis == "ACTIVE"
     assert tags[2].note == "AUX"
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
-    assert tags[4].ruolo_sintattico == "OD"
-    assert tags[5].ruolo_sintattico == "OD"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
+    assert tags[4].syntactic_role == "OD"
+    assert tags[5].syntactic_role == "OD"
 
 
 def test14(tagger):
@@ -265,14 +266,14 @@ def test14(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 2, 2, 3, 3, 3]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_active()
     assert tags[1].diathesis == "ACTIVE"
     assert tags[2].diathesis == "ACTIVE"
     assert tags[1].note == "AUX"
-    assert tags[0].ruolo_sintattico == "SOGG"
+    assert tags[0].syntactic_role == "SOGG"
 
 
 def test15(tagger):
@@ -282,14 +283,14 @@ def test15(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 2, 2, 3, 3, 4, 4]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_active()
     assert tags[1].diathesis == "ACTIVE"
     assert tags[2].diathesis == "ACTIVE"
     assert tags[1].note == "AUX"
-    assert tags[0].ruolo_sintattico == "SOGG"
+    assert tags[0].syntactic_role == "SOGG"
 
 
 def test16(tagger):
@@ -299,16 +300,16 @@ def test16(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 2, 3, 3, 3]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 2:
             assert t.is_middle_mr()
     assert tags[1].diathesis == "MIDDLE_MR"
     assert tags[1].note == "Main verb"
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[2].ruolo_sintattico == "PN"
-    assert tags[3].ruolo_sintattico == "PN"
-    assert tags[4].ruolo_sintattico == "PN"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[2].syntactic_role == "PN"
+    assert tags[3].syntactic_role == "PN"
+    assert tags[4].syntactic_role == "PN"
 
 
 def test17(tagger):
@@ -318,17 +319,17 @@ def test17(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 2, 2, 3, 3, 4, 4, 5, 5]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 3:
             assert t.is_middle_mr()
     assert tags[3].diathesis == "MIDDLE_MR"
     assert tags[4].diathesis == "MIDDLE_MR"
     assert tags[3].note == "AUX"
-    assert tags[1].ruolo_sintattico == "SOGG"
-    assert tags[2].ruolo_sintattico == "SOGG"
-    assert tags[5].ruolo_sintattico == "PN"
-    assert tags[6].ruolo_sintattico == "PN"
+    assert tags[1].syntactic_role == "SOGG"
+    assert tags[2].syntactic_role == "SOGG"
+    assert tags[5].syntactic_role == "PN"
+    assert tags[6].syntactic_role == "PN"
 
 
 def test18(tagger):
@@ -358,20 +359,20 @@ def test18(tagger):
         7,
     ]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 3:
             assert t.is_active()
     assert tags[6].diathesis == "ACTIVE"
     assert tags[7].diathesis == "ACTIVE"
     assert tags[6].note == "AUX"
-    assert tags[0].ruolo_sintattico == "SOGG"
-    assert tags[1].ruolo_sintattico == "SOGG"
-    assert tags[2].ruolo_sintattico == "SOGG"
-    assert tags[8].ruolo_sintattico == "OD"
-    assert tags[9].ruolo_sintattico == "OD"
-    assert tags[15].ruolo_sintattico == "OD"
-    assert tags[16].ruolo_sintattico == "OD"
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
+    assert tags[2].syntactic_role == "SOGG"
+    assert tags[8].syntactic_role == "OD"
+    assert tags[9].syntactic_role == "OD"
+    assert tags[15].syntactic_role == "OD"
+    assert tags[16].syntactic_role == "OD"
 
 
 def test19(tagger):
@@ -381,15 +382,15 @@ def test19(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 2, 2, 3, 3]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 1:
             assert t.is_middle_pr()
     assert tags[0].diathesis == "MIDDLE_PR"
     assert tags[1].diathesis == "MIDDLE_PR"
     assert tags[1].note == "Main verb"
-    assert tags[2].ruolo_sintattico == "OD"
-    assert tags[3].ruolo_sintattico == "OD"
+    assert tags[2].syntactic_role == "OD"
+    assert tags[3].syntactic_role == "OD"
 
 
 def test20(tagger):
@@ -399,14 +400,14 @@ def test20(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 2, 2]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 1:
             assert t.is_active()
     assert tags[0].diathesis == "ACTIVE"
     assert tags[0].note == "Main verb"
-    assert tags[1].ruolo_sintattico == "SOGG|OD"
-    assert tags[2].ruolo_sintattico == "SOGG|OD"
+    assert tags[1].syntactic_role == "SOGG|OD"
+    assert tags[2].syntactic_role == "SOGG|OD"
 
 
 def test21(tagger):
@@ -416,12 +417,43 @@ def test21(tagger):
     # testa il blocco
     assert [t.block for t in tags] == [1, 1, 2, 2]
 
-    # testa la diatesi
+    # testa la diathesis
     for t in tags:
         if t.block == 1:
             assert t.is_middle_mr()
     assert tags[0].diathesis == "MIDDLE_MR"
     assert tags[1].diathesis == "MIDDLE_MR"
     assert tags[1].note == "Main verb"
-    assert tags[2].ruolo_sintattico == "SOGG"
-    assert tags[3].ruolo_sintattico == "SOGG"
+    assert tags[2].syntactic_role == "SOGG"
+    assert tags[3].syntactic_role == "SOGG"
+
+
+def test22(tagger):
+    tagger.tag("Luigi ha fatto cadere Mario")
+    tags = tagger.tags
+
+    # testa il blocco
+    assert [t.block for t in tags] == [1, 2, 2, 2, 3]
+
+    # testa la diathesis
+    for t in tags:
+        if t.block == 2:
+            assert t.is_active()
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[4].syntactic_role == "OD"
+
+
+def test23(tagger):
+    tagger.tag("Il suo racconto non decolla")
+    tags = tagger.tags
+
+    # testa il blocco
+    assert [t.block for t in tags] == [1, 1, 1, 2, 2]
+
+    # testa la diathesis
+    for t in tags:
+        if t.block == 2:
+            assert t.is_active()
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
+    assert tags[2].syntactic_role == "SOGG"

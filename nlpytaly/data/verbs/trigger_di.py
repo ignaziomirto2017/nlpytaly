@@ -1,0 +1,65 @@
+from typing import Set
+
+trigger_di_verbs: Set[str] = {
+    "abusare",
+    "accusare",
+    "approfittare",
+    "avvantaggiare",
+    "beneficiare",
+    "burlare",
+    "chiacchierare",
+    "chiedere",
+    "confabulare",
+    "diffidare",
+    "discettare",
+    "discorrere",
+    "discutere",
+    "disquisire",
+    "dubitare",
+    "fruire",
+    "impicciare",
+    "impossessare",
+    "incaricare",
+    "innamorare",
+    "invaghire",
+    "macchiare",
+    "narrare",
+    "necessitare",
+    "parlare",
+    "ridere",
+    "ridondare",
+    "ringraziare",
+    "risentire",
+    "sapere",
+    "sorridere",
+    "sparlare",
+    "traboccare",
+    "usufruire",
+}
+
+trigger_di_pron_12_verbs: Set[str] = {
+    "dispiacere",
+    "fregare",
+    "interessare",
+    "liberare",
+    "occupare",
+    "preoccupare",
+    "ricordare",
+    "servire",
+    "spaventare",
+    "stancare",
+    "stupire",
+    "trattare",
+}
+
+trigger_di_pron_2_verbs: Set[str] = {
+    "accorgere",
+    "appropriare",
+    "fidare",
+    "impicciare",
+    "infatuare",
+    "pentire",
+    "vergognare",
+}
+
+trigger_di_pron_verbs = trigger_di_pron_12_verbs | trigger_di_pron_2_verbs

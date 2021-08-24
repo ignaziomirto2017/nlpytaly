@@ -1,5 +1,7 @@
-import requests
+import os
+
 from diskcache import Cache
+from requests import Request, Session
 
 cache = Cache(".")
 

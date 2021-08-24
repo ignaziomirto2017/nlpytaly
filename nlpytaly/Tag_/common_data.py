@@ -1,4 +1,4 @@
-from ..data.verbi.flessi import verbi_flessi
+from ..data.verbs.inflected_verbs_pos import inflected_verbs_pos
 
 if __name__ == "__main__":
-    print(verbi_flessi)
+    print(inflected_verbs_pos)

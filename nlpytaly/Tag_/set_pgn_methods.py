@@ -4,20 +4,20 @@ def set_pn(self, p: int, n: str):
 
 
 def set_gn(self, g, n):
-    self.genere = g
-    self.numero = n
+    self.gender = g
+    self.number = n
 
 
 def set_n(self, n: str):
     if n in ["s", "p", "s|p"]:
-        self.numero = n
+        self.number = n
     else:
         raise ValueError()
 
 
 def set_g(self, g: str):
     if g in ["m", "f", "m|f"]:
-        self.genere = g
+        self.gender = g
     else:
         raise ValueError()
 
@@ -29,14 +29,14 @@ def set_p(self, p: int):
     amb_1_2_3 = "1st|2nd|3rd"
     amb_1_3 = "1st|3rd"
     if p == 1:
-        self.persona = first_person
+        self.person = first_person
     elif p == 2:
-        self.persona = second_person
+        self.person = second_person
     elif p == 3:
-        self.persona = third_person
+        self.person = third_person
     elif p == 13:
-        self.persona = amb_1_3
+        self.person = amb_1_3
     elif p == 123:
-        self.persona = amb_1_2_3
+        self.person = amb_1_2_3
     else:
         raise ValueError()

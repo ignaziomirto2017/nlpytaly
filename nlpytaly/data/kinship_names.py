@@ -1,0 +1,27 @@
+from typing import Set
+
+kinship_names: Set[str] = {
+    "cognata",
+    "cognato",
+    "cugina",
+    "cugino",
+    "figlia",
+    "figlio",
+    "fratello",
+    "genero",
+    "madre",
+    "mamma",
+    "marito",
+    "moglie",
+    "nipote",
+    "nonna",
+    "nonno",
+    "nuora",
+    "padre",
+    "papà",
+    "sorella",
+    "suocera",
+    "suocero",
+    "zia",
+    "zio",
+}

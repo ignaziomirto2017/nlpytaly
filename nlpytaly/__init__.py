@@ -1,1 +1,1 @@
-from .nlpytaly import nlpytaly
+from .nlpytaly import NLPYTALY, entailment

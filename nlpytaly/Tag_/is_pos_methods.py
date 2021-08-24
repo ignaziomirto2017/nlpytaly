@@ -9,6 +9,10 @@ def is_infinitive(self) -> bool:
     return ":infi" in self.pos
 
 
+def is_npr(self) -> bool:
+    return "NPR" in self.pos
+
+
 def is_gerund(self) -> bool:
     return ":geru" in self.pos
 
@@ -34,7 +38,7 @@ def is_past_participle(self) -> bool:
 
 
 def is_inflected_verb(self) -> bool:
-    for v in verbi_flessi:
+    for v in inflected_verbs_pos:
         if v in self.pos:
             return True
     return False
@@ -46,3 +50,7 @@ def is_adverb(self) -> bool:
 
 def is_pro_pers(self) -> bool:
     return self.pos in ["PRO:pers", "PRO:pers:Sogg"]
+
+
+def is_pro_poss(self) -> bool:
+    return self.pos in ["PRO:poss"]

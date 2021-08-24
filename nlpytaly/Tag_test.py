@@ -3,12 +3,12 @@ from typing import List
 import pytest
 
 from .Tag import Tag
-from .nlpytaly import nlpytaly
+from .nlpytaly import NLPYTALY
 
 
 @pytest.fixture()
 def tagger():
-    return nlpytaly()
+    return NLPYTALY()
 
 
 def test1(tagger):

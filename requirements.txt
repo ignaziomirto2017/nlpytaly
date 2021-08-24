@@ -1,7 +1,7 @@
 black
 coverage
 diskcache
-hug
+flask
 jsonpickle
 more_itertools
 pytest

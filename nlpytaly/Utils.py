@@ -1,10 +1,11 @@
 import re
 import time
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Union
 
 from .Tag import Tag
-from .data.verbi.meteo import verbi_meteo
-from .operazioni.crea_blocchi import fix
+from .data.places import places
+from .data.verbs.weather_verbs import weather_verbs
+from .operations.create_blocks import fix
 
 
 def line_to_clean_lines(line: str):
@@ -26,12 +27,12 @@ def get_candidate(candidates: List[List[Tuple[str, List[int]]]], index: int):
     return tuple()
 
 
-def get_SOGG_OD_for_tag(t: Tag, ruoli_sintattici_result: Dict):
+def get_subj_obj_for_tag(t: Tag, ruoli_sintattici_result: Dict):
     # sogg, od, pn, sogg|od
     result = [None, None, None, None]
-    vblock_indexes = t.get_same_block_indexes()
+    v_block_indexes = t.get_same_block_indexes()
     for k, v in ruoli_sintattici_result.items():
-        if v[1] == vblock_indexes:
+        if v[1] == v_block_indexes:
             if v[0] == "SOGG":
                 result[0] = k
             elif v[0] == "OD":
@@ -43,43 +44,93 @@ def get_SOGG_OD_for_tag(t: Tag, ruoli_sintattici_result: Dict):
     return result
 
 
-def get_SOGG_OD_for_tag_tags(t: Tag, tags: List[Tag], ruoli_sintattici_result: Dict):
-    result = get_SOGG_OD_for_tag(t, ruoli_sintattici_result)
-    for i in range(len(result)):
-        item: Tuple[int] = result[i]
+def get_subj_obj_tags_for_tag(
+    t: Tag, tags: List[Tag], ruoli_sintattici_result: Dict
+) -> List[Tag]:
+    result = get_subj_obj_for_tag(t, ruoli_sintattici_result)
+    for i, item in enumerate(result):
+        item: Tuple[int]
         if item:
             result[i] = [tags[x] for x in item]
     return result
 
 
-def get_SOGG_OD_for_tag_occurrences(
+def get_subj_obj_occurrences_for_tag(
     t: Tag, tags: List[Tag], ruoli_sintattici_result: Dict, wrap="'"
-):
-    result = get_SOGG_OD_for_tag(t, ruoli_sintattici_result)
-    for i in range(len(result)):
-        item: Tuple[int] = result[i]
+) -> List[str]:
+    result = get_subj_obj_for_tag(t, ruoli_sintattici_result)
+    for i, item in enumerate(result):
+        item: Tuple[int]
         if item:
-            result[i] = wrap + " ".join(tags[x].occorrenza for x in item).upper() + wrap
+            result[i] = wrap + " ".join(tags[x].occurrence for x in item).upper() + wrap
     return result
 
 
-def search_x_phrase(tags, to_be_searched) -> Tag:
+def search_x_phrase(tags, to_be_searched) -> Union[None, List[Tag]]:
     for i, tag in enumerate(tags):
         if tag.lemma in to_be_searched:
-            x_phrase_si = [x for x in tags[i:] if "NPR" in x.pos or "NOM" in x.pos]
+            x_phrase_si: List[Tag] = [
+                x
+                for x in tags[i:]
+                if "NPR" in x.pos
+                or "NOM" in x.pos
+                or "PRE:det" in x.pos
+                or "PRO:demo" in x.pos
+                or "PRO:pers" in x.pos
+                or "PRO:poss" in x.pos
+                or "DET:indef" in x.pos
+                or "PRE" in x.pos
+                or "ADJ" in x.pos
+            ]
+            # teniamo solo la prima preposizione
+            # per evitare ad es. "alla sorella da Maria"
+            prepositions = 0
+            last_prep_index = -1
+            for j, item in enumerate(x_phrase_si):
+                if "PRE" in item.pos:
+                    prepositions += 1
+                    last_prep_index = j
+            if prepositions >= 2:
+                x_phrase_si = x_phrase_si[0:last_prep_index]
+
             if x_phrase_si:
-                x_phrase_si = x_phrase_si[0]
-                break
+                block = x_phrase_si[0].block
+                x_phrase_si = [x for x in x_phrase_si if x.block == block]
+
+            if x_phrase_si[0].occ in {"da", "a"}:
+                x_phrase_si = x_phrase_si[1:]
+            else:
+                suffixes = {
+                    "'": "l'",
+                    "l": "il",
+                    "lo": "lo",
+                    "la": "la",
+                    "gli": "gli",
+                    "i": "i",
+                    "le": "le",
+                }
+                tmp = x_phrase_si[1:]
+                for k, v in suffixes.items():
+                    if x_phrase_si[0].occ.endswith(k):
+                        x_phrase_si = [Tag(v, "DET:def", "il")] + tmp
+                        break
+
+            if to_be_searched == ["a", "al"] and x_phrase_si:
+                if x_phrase_si[-1]._occurrence in places:
+                    x_phrase_si = None
+
+            return x_phrase_si
     else:
         x_phrase_si = None
+
     return x_phrase_si
 
 
-def search_a_phrase(tags) -> Tag:
+def search_a_phrase(tags) -> List[Tag]:
     return search_x_phrase(tags, to_be_searched=["a", "al"])
 
 
-def search_da_phrase(tags) -> Tag:
+def search_da_phrase(tags) -> List[Tag]:
     return search_x_phrase(tags, to_be_searched=["da", "dal"])
 
 
@@ -107,7 +158,7 @@ def get_diatheses(tags: List[Tag]):
     for t in tags:
         if t.block not in blocks_done:
             block = t.get_same_block_tags()
-            words = " ".join(tmp.occorrenza for tmp in block if tmp.pos != "ADV")
+            words = " ".join(tmp.occurrence for tmp in block if tmp.pos != "ADV")
             if any(k.is_verb() for k in block):
                 if t.diathesis == "ACTIVE":
                     all_items.append((words, 0))
@@ -126,33 +177,33 @@ def find_covert_subjects(ov, result, tags, verbs_with_overt_subject):
         if t.is_inflected_verb():
             verbal_block_indexes = t.get_same_block_indexes()
             verbal_block_lemmas = t.get_same_block_lemmas()
-            if t.persona == "1st" and t.numero == "s":
+            if t.person == "1st" and t.number == "s":
                 if verbal_block_indexes not in verbs_with_overt_subject:
                     t.cov_sub = 1
                     result.append(
                         f"The covert subject of '{ov(verbal_block_indexes)}'  is 'IO'."
                     )
-            elif t.persona == "2nd" and t.numero == "s":
+            elif t.person == "2nd" and t.number == "s":
                 if verbal_block_indexes not in verbs_with_overt_subject:
                     t.cov_sub = 2
                     result.append(
                         f"The covert subject of '{ov(verbal_block_indexes)}'  is 'TU'."
                     )
-            elif t.persona == "1st" and t.numero == "p":
+            elif t.person == "1st" and t.number == "p":
                 if verbal_block_indexes not in verbs_with_overt_subject:
                     t.cov_sub = 4
                     result.append(
                         f"The covert subject of '{ov(verbal_block_indexes)}'  is 'NOI'."
                     )
-            elif t.persona == "2nd" and t.numero == "p":
+            elif t.person == "2nd" and t.number == "p":
                 if verbal_block_indexes not in verbs_with_overt_subject:
                     t.cov_sub = 5
                     result.append(
                         f"The covert subject of '{ov(verbal_block_indexes)}'  is 'VOI'."
                     )
-            elif t.persona == "3rd" and t.numero == "s":
+            elif t.person == "3rd" and t.number == "s":
                 if (
-                    any(x in verbi_meteo for x in verbal_block_lemmas)
+                    any(x in weather_verbs for x in verbal_block_lemmas)
                     or t.is_impersonal()
                 ):
                     continue
@@ -161,7 +212,7 @@ def find_covert_subjects(ov, result, tags, verbs_with_overt_subject):
                     result.append(
                         f"The covert subject of '{ov(verbal_block_indexes)}'  is 'LUI|LEI'."
                     )
-            elif t.persona == "3rd" and t.numero == "p":
+            elif t.person == "3rd" and t.number == "p":
                 if verbal_block_indexes not in verbs_with_overt_subject:
                     t.cov_sub = 6
                     result.append(
@@ -170,13 +221,13 @@ def find_covert_subjects(ov, result, tags, verbs_with_overt_subject):
 
 
 def wording_syntactic_roles(ruoli_sintattici_result: dict, tags: List[Tag]):
-    def ov(t: tuple):  # da tupla a occorrenza, per i verbi (ov = occorrenze verbi)
+    def ov(t: tuple):  # da tupla a occorrenza, per i verbs (ov = occorrenze verbs)
         return " ".join(
-            tags[x].occorrenza.upper() for x in t if tags[x].pos not in ["ADV", "PRE"]
+            tags[x].occurrence.upper() for x in t if tags[x].pos not in ["ADV", "PRE"]
         )
 
     def on(t: tuple):  # da tupla a occorrenza, per i nomi (on = occorrenze nomi)
-        return " ".join(tags[x].occorrenza.upper() for x in t)
+        return " ".join(tags[x].occurrence.upper() for x in t)
 
     result: List[str] = []
     verbs_with_overt_subject = set()
@@ -202,3 +253,11 @@ def wording_syntactic_roles(ruoli_sintattici_result: dict, tags: List[Tag]):
     find_covert_subjects(ov, result, tags, verbs_with_overt_subject)
 
     return result
+
+
+def mark_tag(t: Tag, k: str, v) -> None:
+    setattr(t, k, v)
+
+
+def get_attr(t, k):
+    return getattr(t, k, None)
