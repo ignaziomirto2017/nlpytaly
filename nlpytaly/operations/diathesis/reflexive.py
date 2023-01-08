@@ -1,11 +1,11 @@
 from typing import List
 
-from .utils import assign
-from ...Tag import Tag
 from ...data.clitics import reflexive_clitics
 from ...data.verbs.bivalent import v12_2si
 from ...data.verbs.class_1_verbs import class_1_verbs
-from ...data.verbs.class_2_verbs import class_2_verbs, class_2_verbs_si
+from ...data.verbs.class_2_verbs import class_2_verbs_, class_2_verbs_si
+from ...Tag import Tag
+from .utils import assign
 
 
 def pRFL(
@@ -32,10 +32,8 @@ def pRFL(
                 and last_proclisis_tag.occurrence == "ci"
             ):
                 assign(tags, tags[indici_sv[0]], "MIDDLE_MR")
-            # il blocco sotto restituisce 'impersonal' anche con  class_2_verbs_si e dà
-            # erroneamente 'Piero si è congratulato' come impersonal
             elif (
-                last_verb_tag.lemma in class_1_verbs | class_2_verbs
+                last_verb_tag.lemma in class_1_verbs | class_2_verbs_
                 and first_verb_tag.person == "3rd"
                 and first_verb_tag.number == "s"
                 and last_proclisis_tag.lemma == "si"
@@ -58,13 +56,17 @@ def pRFL(
             last_proclisis_index = proclisi[-step]
             last_proclisis_tag = tags[last_proclisis_index]
             first_verb_tag = tags[last_proclisis_tag.index + step]
-            if last_proclisis_tag.occurrence in [
-                "me",
-                "te",
-                "ce",
-                "se",
-                "ve",
-            ] and last_proclisis_tag.match_pn(first_verb_tag):
+            if (
+                last_proclisis_tag.occurrence
+                in [
+                    "me",
+                    "te",
+                    "ce",
+                    "se",
+                    "ve",
+                ]
+                and last_proclisis_tag.match_pn(first_verb_tag)
+            ):
                 assign(tags, tags[indici_sv[0]], "MIDDLE_PR")
             if (
                 tags[last_proclisis_tag.index + 1].occurrence == "si"

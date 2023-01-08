@@ -1,12 +1,12 @@
 from typing import List
 
+from ...data.verbs.class_1_verbs import class_1_verbs, two_place_predicate1
+from ...Tag import Tag
+from ...Utils import increment_blocks
 from .exclude_weather_verbs import exclude_weather_verbs
 from .left_side_search import nearest_candidate_left
 from .right_side_search import nearest_candidate_right
 from .utils import role_found
-from ...Tag import Tag
-from ...Utils import increment_blocks
-from ...data.verbs.class_1_verbs import class_1_verbs
 
 
 def syntactic_roles(
@@ -17,13 +17,16 @@ def syntactic_roles(
     prep_inf: List[List[int]],
     gerunds: List[List[int]],
     indici_proclisi: List[List[int]],
-    exclusions=None,
+    exclusions_subj=None,
+    exclusions_od=None,
 ):
     subj_dict = {}
 
     exclude_weather_verbs(tags, indici_verbi_flessi)
-    if exclusions is None:
-        exclusions = []  # Lui fa >il meccanico<
+    if exclusions_subj is None:
+        exclusions_subj = []  # Fa l'ipotesi (ipotesi non può essere subj)
+    if exclusions_od is None:
+        exclusions_od = []  # Lui fa >il meccanico<
 
     for step in [1, 2]:
         # sp = soggetto presunto
@@ -34,6 +37,7 @@ def syntactic_roles(
             tags,
             step,
             subj_dict,
+            exclusions_subj,
         )
         for r in results:
             candidato_subj = r[0]
@@ -48,7 +52,7 @@ def syntactic_roles(
             sorted(indici_verbi_flessi + prep_inf + gerunds, key=lambda x: x[0]),
             indici_candidati,
             tags,
-            exclusions,
+            exclusions_od,
             step,
         )
         for o in op:
@@ -92,14 +96,22 @@ def syntactic_roles(
                         or v_tags[0].is_middle()
                         or (
                             v_tags[0].is_active()
-                            and any(v.lemma in class_1_verbs for v in v_tags)
+                            and any(
+                                v.lemma in class_1_verbs | two_place_predicate1
+                                for v in v_tags
+                            )
                         )
-                    ):
+                    ) or o_tag.pos == "PRO:pers:Sogg":
                         role_found(tags, op__indexes, "SOGG", v_indexes, syn_role_dict)
                     else:
-                        role_found(
-                            tags, op__indexes, "SOGG|OD", v_indexes, syn_role_dict
-                        )
+                        if any(x in exclusions_subj for x in op__indexes):
+                            role_found(
+                                tags, op__indexes, "OD", v_indexes, syn_role_dict
+                            )
+                        else:
+                            role_found(
+                                tags, op__indexes, "SOGG|OD", v_indexes, syn_role_dict
+                            )
                 else:
                     if v_tags[0].is_passive() or v_tags[0].is_middle_mr():
                         continue
@@ -108,6 +120,14 @@ def syntactic_roles(
     for key in syn_role_dict:
         start = key[0]
         end = key[-1]
+
+        next: Tag = tags[end].next()
+        if next and next.lemma in {"di", "del"} and next.pos != "DET:part":
+            # blocco successivo se termina in nome o nome+adj
+            POSs = [(tags[i].pos, tags[i].index) for i in next.get_same_block_indexes()]
+            match POSs:
+                case [*_, ("NOM", i)] | [*_, ("NOM", _), ("ADJ", i)]:
+                    end = i
         increment_blocks(tags, start, end)
 
     return syn_role_dict

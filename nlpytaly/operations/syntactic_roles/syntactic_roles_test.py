@@ -3,6 +3,7 @@ from typing import List
 import pytest
 
 from nlpytaly import NLPYTALY
+
 from ...Tag import Tag
 
 
@@ -141,3 +142,19 @@ def test16(tagger):
 
     assert tags[8].syntactic_role == "OD"
     assert tags[9].syntactic_role == "OD"
+
+
+def test17(tagger):
+    result = tagger.tag("Ha messo la scuola sotto sorveglianza")
+    tags: List[Tag] = result["tags"]
+    assert tags[2].syntactic_role == "SOGG|OD"
+    assert tags[3].syntactic_role == "SOGG|OD"
+
+
+def test18(tagger):
+    result = tagger.tag("Il magistrato ha messo la scuola sotto sorveglianza")
+    tags: List[Tag] = result["tags"]
+    assert tags[0].syntactic_role == "SOGG"
+    assert tags[1].syntactic_role == "SOGG"
+    assert tags[4].syntactic_role == "OD"
+    assert tags[5].syntactic_role == "OD"

@@ -1,8 +1,8 @@
 from typing import List
 
-from .utils import assign
-from ...Tag import Tag
 from ...data.verbs.class_2_verbs import class_2_verbs
+from ...Tag import Tag
+from .utils import assign
 
 
 def active_mRFL(tags: List[Tag]):

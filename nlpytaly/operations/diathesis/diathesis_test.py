@@ -42,7 +42,7 @@ def test5():
 
 def test6():
     nt = NLPYTALY()
-    result = nt.tag("Quelle obiezioni furono mosse dalle donne al capo")
+    result = nt.tag("Quelle obiezioni furono fatte dalle donne al capo")
     tags = result["tags"]
     assert tags[3].diathesis == "PASSIVE"
 

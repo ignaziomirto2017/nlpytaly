@@ -1,9 +1,9 @@
 from typing import List
 
+from ...Tag import Tag
 from .maybe_partitive_nb import process_next_block
 from .maybe_partitive_pb import process_prev_block
 from .maybe_partitive_sb import process_same_block
-from ...Tag import Tag
 
 
 def maybe_partitive(tags: List[Tag], notes: List[str]):

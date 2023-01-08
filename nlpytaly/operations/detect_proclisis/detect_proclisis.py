@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
-from ...Tag import Tag
 from ...data.clitics import clitics, clitics_atm_1
+from ...Tag import Tag
 
 
 def detect_proclisis(tags: List[Tag]) -> Tuple[List[List[str]], List[List[int]]]:

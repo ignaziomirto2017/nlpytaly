@@ -1,0 +1,6 @@
+diskcache==5.4.0
+Flask==2.2.2
+jsonpickle==2.2.0
+more-itertools==9.0.0
+requests==2.28.1
+waitress==2.1.2

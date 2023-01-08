@@ -5,7 +5,10 @@ from ...Tag import Tag
 
 pronomi = [
     "egli",
+    "esso",
+    "essa",
     "essi",
+    "esse",
     "io",
     "lei",
     "loro",

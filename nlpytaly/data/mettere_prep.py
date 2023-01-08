@@ -14,11 +14,12 @@ mettere_prep_dict = {
         "esame": {v: "esaminare"},
         "inchiesta": {v: "indagare"},  # suppletivo
         "interrogatorio": {v: "interrogare"},
+        "monitoraggio": {v: "monitorare"},
         "osservazione": {v: "controllare"},
         "pressione": {v: "affaticare"},
         "processo": {v: "processare"},
         "protezione": {v: "proteggere"},
-        "scacco": {v: "battere"},
+        "scacco": {v: "battere"},  # incastrare?
         "scorta": {v: "scortare"},
         "sequestro": {v: "sequestrare"},
         "silenzio": {v: "insabbiare"},
@@ -28,11 +29,11 @@ mettere_prep_dict = {
         "tutela": {v: "tutelare"},
     },
     "in": {
-        "soggezione": {v: "intimorire"},
         "agenda": {v: "programmare"},
         "agitazione": {v: "preoccupare"},
         "allarme": {v: "allarmare"},
         "allerta": {v: "allertare"},
+        "ambasce": {v: "preoccupare"},
         "ansia": {v: "angosciare"},
         "arresto": {v: "arrestare"},
         "atto": {v: "attuare"},
@@ -62,16 +63,20 @@ mettere_prep_dict = {
         "libertà": {v: "liberare"},
         "luce": {v: "rivelare"},
         "manette": {v: "ammanettare"},
+        "mezzo": {v: "coinvolgere"},
         "mostra": {v: "mostrare"},
-        "moto": {v: "accendere"},
+        "moto": {v: "accendere"},  # ! mettersi in moto (refl vs trans)
         "onda": {v: "trasmettere"},
         "pratica": {v: "attuare"},
         "prigione": {v: "imprigionare"},
         "salvo": {v: "salvare"},
         "scena": {v: "inscenare"},
+        "soggezione": {v: "intimidire"},
+        "trappola": {v: "intrappolare"},
         "viaggio": {"p": "inizia a viaggiare"},
     },
     # mettersi in moto vs. mettere in moto
+    # mettere in libertà vs mettersi in libertà
     "nel": {
         "casini": {v: "incasinare"},
         "guai": {v: "inguaiare"},
@@ -91,6 +96,7 @@ mettere_prep_dict = {
         "sistema": {v: "sistematizzare"},
         "soqquadro": {v: "scompigliare"},
         "verbale": {v: "verbalizzare"},
+        "verifica": {v: "verificare"},
     },
     "al": {
         "arresti": {v: "arrestare"},
@@ -104,12 +110,25 @@ mettere_prep_dict = {
         "prova": {v: "testare"},
         "ricerca": {v: "cercare"},
         "tappeto": {v: "stendere"},
+        "vaglio": {v: "vagliare"},
     },
     "d'": {
         "accordo": {v: "conciliare"},
         "impegno": {v: "impegnare", "si": True},
     },  # impegnarsi
     "da": {"parte": {v: "accantonare"}},
-    "di": {"buzzo": {v: "impegnare", "si": True}, "traverso": {v: "ostacolare"}},
-    "fuori": {"uso": {v: "rovinare"}, "combattimento": {v: "neutralizzare"}},
+    "di": {
+        "buonumore": {v: "rallegrare"},
+        "buzzo": {v: "impegnare", "si": True},
+        "traverso": {v: "ostacolare"},
+    },
+    "fuori": {
+        "combattimento": {v: "neutralizzare"},
+        "fase": {v: "sfasare"},
+        "gioco": {v: "eliminare"},
+        "uso": {v: "rovinare"},
+    },
 }
+
+if __name__ == "__main__":
+    print(len(mettere_prep_dict))

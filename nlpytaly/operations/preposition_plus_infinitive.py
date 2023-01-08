@@ -1,7 +1,7 @@
 from typing import List
 
-from ..Tag import Tag
 from ..data.improper_predicates import improper_predicates
+from ..Tag import Tag
 
 
 def detect_prep_plus_infinitive(tags: List[Tag]):

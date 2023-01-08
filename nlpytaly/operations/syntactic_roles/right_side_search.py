@@ -22,4 +22,5 @@ def nearest_candidate_right(
                     result.append([candidate, x])
                     candidates_indexes.remove(candidate)
                     break
+
     return result

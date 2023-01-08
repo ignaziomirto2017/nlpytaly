@@ -1,39 +1,51 @@
-ate_multiwords = {
-    "archibugiate": "sparare",
+from typing import Dict, Set
+
+cognate_ate_multiwords: Dict[str, str] = {
     "bacchettate": "bacchettare",
     "bastonate": "bastonare",
     "cannonate": "cannoneggiare",
-    "ceffoni": "schiaffeggiare",
     "coltellate": "accoltellare",
     "cornate": "incornare",
-    "dentate": "mordere",
     "frustate": "frustare",
-    "fucilate": "sparare",
     "manganellate": "manganellare",
-    "manrovesci": "schiaffeggiare",
     "morsi": "mordere",
-    "moschettate": "sparare",
+    "pernacchie": "spernacchiare",
     "picconate": "picconare",
-    "pistolettate": "sparare",
+    "pizzichi": "pizzicare",
+    "pizzicotti": "pizzicare",
     "pugnalate": "pugnalare",
     "randellate": "randellare",
+    "schiaffetti": "schiaffeggiare",
+    "schiaffi": "schiaffeggiare",
+    "schiaffoni": "schiaffeggiare",
+    "sculacciate": "sculacciare",
+    "spinte": "spingere",
+    "spintoni": "spingere",
+    "sprangate": "sprangare",
+    "stangate": "stangare",
+    "strattonate": "strattonare",
+    "strigliate": "strigliare",
+}
+
+ate_multiwords: Dict[str, str] = {
+    "archibugiate": "sparare",  # il verbo è qui intransitivo (a chi si spara)
+    "ceffoni": "schiaffeggiare",
+    "dentate": "mordere",
+    "fucilate": "sparare",  # esiste 'fucilare', ma con altro significato
+    "manrovesci": "schiaffeggiare",
+    "mitragliate": "sparare",
+    "moschettate": "sparare",
+    "pistolettate": "sparare",
     "revolverate": "sparare",
     "rivoltellate": "sparare",
     "sberle": "schiaffeggiare",
     "scapaccioni": "schiaffeggiare",
     "scappellotti": "schiaffeggiare",
-    "schiaffetti": "schiaffeggiare",
-    "schiaffi": "schiaffeggiare",
-    "schiaffoni": "schiaffeggiare",
     "schioppettate": "sparare",
-    "sculacciate": "sculacciare",
     "sganassoni": "schiaffeggiare",
-    "spinte": "spingere",
-    "spintoni": "spingere",
-    "sprangate": "sprangare",
-}
+} | cognate_ate_multiwords
 
-ate_multiwords_colpire = {
+ate_multiwords_colpire: Set[str] = {
     "accettate",
     "ancate",
     "asciate",
@@ -49,11 +61,13 @@ ate_multiwords_colpire = {
     "capocciate",
     "cappellate",
     "catinellate",
-    "cazzotti",
+    "cazzotti",  # 'scazzottare' esiste, ma dà reciproco
     "ciabattate",
     "ciaspolate",
     "cinghiate",
+    "cipollate",
     "cocomerate",
+    "colpi",
     "colubrinate",
     "craniate",
     "cucchiaiate",
@@ -71,6 +85,7 @@ ate_multiwords_colpire = {
     "martellate",
     "mazzolate",
     "mestolate",
+    "nasate",
     "ombrellate",
     "pacche",
     "padellate",
@@ -81,8 +96,11 @@ ate_multiwords_colpire = {
     "pietrate",
     "pinzate",
     "pomodorate",
+    "prugnate",
     "pugni",
+    "racchettate",
     "rasoiate",
+    "roncolate",
     "sassate",
     "sassi",
     "scarpate",
@@ -92,7 +110,9 @@ ate_multiwords_colpire = {
     "scudisciate",
     "secchiate",
     "sgabellate",
-    "sputi",  # sputare = intransitive
+    "spallate",
+    "sportellate",
+    "sputi",  # sputare = intransitive (ma 'sputare sangue')
     "stilettate",
     "testate",
     "unghiate",
@@ -101,10 +121,10 @@ ate_multiwords_colpire = {
     "zoccolate",
 }
 
-ate_multiwords_insultare = {
+ate_multiwords_insultare: Set[str] = {
     "bestemmie",
     "ingiurie",
-    "insulti",
+    "insulti",  # con controparte verbale
     "minacce",
     "offese",
     "parolacce",
@@ -114,9 +134,19 @@ ate_multiwords_insultare = {
 }
 
 
-synonyms = {
+synonyms: Dict[str, str] = {
     "cazzotti": "pugni",
     "pedate": "calci",
     "spinte": "spintoni",
     "sassi": "sassate",
 }
+
+__joined__ = (
+    list(cognate_ate_multiwords.keys())
+    + list(ate_multiwords.keys())
+    + list(ate_multiwords_colpire)
+    + list(ate_multiwords_insultare)
+)
+
+if __name__ == "__main__":
+    print(len(__joined__))

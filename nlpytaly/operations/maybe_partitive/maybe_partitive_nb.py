@@ -1,6 +1,11 @@
-from .common_data import *
 from ...data.adj_trigger_di import adj_trigger_di_pp
 from ...data.verbs.intransitives import all_intransitives
+from .common_data import (
+    adj_trigger_di,
+    di_licenser,
+    trigger_di_pron_verbs,
+    trigger_di_verbs,
+)
 
 
 def process_next_block(
@@ -27,7 +32,7 @@ def process_next_block(
             g = [x.number for x in t.get_next_block_tags() if x.is_inflected_verb()]
             h = [x.person for x in t.get_next_block_tags() if x.is_inflected_verb()]
             for p in tags_next_2_blocks:
-                l = [x for x in t.get_next_block_tags() if x.is_inflected_verb()]
+                [x for x in t.get_next_block_tags() if x.is_inflected_verb()]
                 if p.lemma in adj_trigger_di:
                     if (
                         "p" in g and "3rd" in h

@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Set
 
-from ..create_blocks import increment
-from ...Tag import Tag
 from ...data.kinship_names import kinship_names
+from ...Tag import Tag
+from ..create_blocks import increment
 
 determinanti = ["DET:def", "DET:indef", "PRO:demo", "PRO:indef", "DET:part"]
 improper_prepositions = [
@@ -23,10 +23,12 @@ def mark_as_candidate(result: List[List[int]], all_tags: List[Tag]):
             all_tags[i]._is_sub_obj_candidate = True
 
 
-def search_det_np(tags: List[Tag], all_tags: List[Tag]) -> List[List[int]]:
+def search_det_np(
+    tags: List[Tag], all_tags: List[Tag], done: Set[int]
+) -> List[List[int]]:
     indexes: List[List[int]] = list()
-    for i in range(len(tags)):
-        lt = len(tags)
+    lt = len(tags)
+    for i in range(lt):
         if (
             tags[i].pos in determinanti
             and not tags[i - 1].is_preposition()
@@ -42,10 +44,7 @@ def search_det_np(tags: List[Tag], all_tags: List[Tag]) -> List[List[int]]:
                 indexes[-1].append(tags[i + 1].index)
                 indexes[-1].append(tags[i + 2].index)
             elif i + 2 < lt and tags[i + 1].pos in ["ADJ", "VER:pper"]:
-                if tags[i + 2].pos in [
-                    "NOM",
-                    "NPR",
-                ]:  # un grande colpo; il bel Mario
+                if tags[i + 2].pos in ["NOM", "NPR"]:  # un grande colpo; il bel Mario
                     indexes[-1].append(tags[i + 1].index)
                     indexes[-1].append(tags[i + 2].index)
                 else:  # il primo, il biondo
@@ -96,6 +95,8 @@ def search_det_np(tags: List[Tag], all_tags: List[Tag]) -> List[List[int]]:
                     i + 1 < lt
                     and not tags[i + 1].is_adverb()
                     and not tags[i + 1].is_verb()
+                    # evita: Mario ha raccontato _qualcosa a Giulio_
+                    and not tags[i + 1].is_preposition()
                 ):
                     count = 1
                     while (
@@ -116,6 +117,10 @@ def search_det_np(tags: List[Tag], all_tags: List[Tag]) -> List[List[int]]:
 
     if len(indexes) > 1:
         increment(all_tags, indexes[-1][0])
+
+    for tmp in indexes:
+        for i in tmp:
+            done.add(i)
     return indexes
 
 
@@ -123,26 +128,49 @@ def search_det_np(tags: List[Tag], all_tags: List[Tag]) -> List[List[int]]:
 def find_bare_plural_noun(all_tags: List[Tag], done) -> List[List[int]]:
     result: List[List[int]] = []
     for i, t in enumerate(all_tags):
-        if t.is_noun() and t.is_plural():
-            if i >= 1 and all_tags[t.index - 1].is_verb():
-                if t.index not in done:
-                    result.append(
-                        [t.index,]
-                    )
-                    done.add(t.index)
-            elif (
-                i >= 2
-                and all_tags[t.index - 2].is_verb()
-                and (
-                    all_tags[t.index - 1].is_adjective()
-                    or all_tags[t.index - 1].is_pro_poss()
-                )
-            ):
-                if t.index not in done:
-                    result.append(
-                        [t.index - 1, t.index,]
-                    )
-                    done.add(t.index)
+        if t.is_verb():
+            tmp = [(x.pos, x.number, x.index) for x in t.get_next_block_tags()]
+            match tmp:
+                case [("NUM", _, i), ("NOM", "p", j), ("ADJ", "p", k), *x]:
+                    # 4 simpatici amici
+                    # i pos sono obbligati da un errore di TreeTagger
+                    # dovrebbero essere: num, adj, nom
+                    if i not in done:
+                        result.append([i, j, k])
+                        done.add(i)
+                case [("ADJ", _, i), ("NOM", "p", j), ("ADJ", "p", k), *x]:
+                    # quattro simpatici amici
+                    # i pos sono obbligati da un errore di TreeTagger
+                    # dovrebbero essere: adj, adj, nom
+                    if i not in done:
+                        result.append([i, j, k])
+                        done.add(i)
+                case [("NOM", "p", i), ("ADJ", "p", j), *x]:
+                    # patate belle
+                    if i not in done:
+                        result.append([i, j])
+                        done.add(i)
+                case [("ADJ", "p", i), ("NOM", "p", j), *x]:
+                    # belle patate
+                    if i not in done:
+                        result.append([i, j])
+                        done.add(i)
+                case [("PRO:poss", "p", i), ("NOM", "p", j), *x]:
+                    # miei amici
+                    if i not in done:
+                        result.append([i, j])
+                        done.add(i)
+                case [("NOM", "p", i), *x]:
+                    # amici
+                    if i not in done:
+                        result.append([i])
+                        done.add(i)
+                case [("NUM", _, i), ("NOM", "p", j), *x]:
+                    # 4 amici
+                    if i not in done:
+                        result.append([i, j])
+                        done.add(i)
+
     mark_as_candidate(result, all_tags)
     return result
 
@@ -152,7 +180,13 @@ def nomi_di_parentela(all_tags: List[Tag], done):
     result: List[List[int]] = []
     for i, t in enumerate(all_tags):
         if t.is_pro_poss():
-            if t.next() and t.next().occ in kinship_names:
+            p: Tag = t.prev()
+            n: Tag = t.next()
+            if n and n.occ in kinship_names:
+                if p and p.is_preposition():
+                    # avoid flagging "a suo cugino" as candidate
+                    result.append([t.index, t.next().index])
+                    continue
                 if t.index not in done:
                     result.append([t.index, t.next().index])
                     done.add(t.index)

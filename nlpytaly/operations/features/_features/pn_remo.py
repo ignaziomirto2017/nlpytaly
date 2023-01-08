@@ -6,6 +6,7 @@ _data1 = [
     "bevve",
     "diede",
     "disse",
+    "ebbe",
     "fece",
     "fu",
     "intervenne",
@@ -19,6 +20,7 @@ _data2 = [
     "bevvero",
     "diedero",
     "dissero",
+    "ebbero",
     "fecero",
     "furono",
     "misero",
@@ -59,6 +61,8 @@ def pn_remo(tags: List[Tag]) -> None:
             elif t.occ.endswith("nnero"):
                 t.set_pn(3, "p")
             elif t.occ.endswith("esero"):
+                t.set_pn(3, "p")
+            elif t.occ.endswith("isero"):
                 t.set_pn(3, "p")
             elif t.occ.endswith("insero"):
                 t.set_pn(3, "p")

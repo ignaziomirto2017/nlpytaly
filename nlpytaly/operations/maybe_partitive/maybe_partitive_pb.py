@@ -1,12 +1,12 @@
 from typing import List
 
-from .common_data import *
-from ...Tag import Tag
 from ...data.adj_trigger_di import adj_trigger_di_pp
 from ...data.verbs.intransitives import all_intransitives
 from ...operations.formations.reflexive_infinitive_formation import (
     reflexive_infinitive_formation,
 )
+from ...Tag import Tag
+from .common_data import di_licenser, trigger_di_pron_verbs, trigger_di_verbs
 
 
 # PIVOT A DX: UNMARKED WORD ORDER
@@ -63,7 +63,7 @@ def process_prev_block(prev_block: List[Tag], tags, notes, blocks_done, t):
                 p
             ) in (
                 t.get_prev_block_tags()
-            ):  # noi siamo soddisfatti dei risultati (TBTCO: Sono soddisfatte delle persone[ambiguo])
+            ):  # noi siamo soddisfatti dei risultati (compare to Sono soddisfatte delle persone[ambiguo])
                 if p.occurrence in adj_trigger_di_pp:
                     notes.append(
                         f"{t.occurrence.upper()} is a genitive licensed by {p.occurrence.upper()}"
@@ -86,7 +86,7 @@ def process_prev_block(prev_block: List[Tag], tags, notes, blocks_done, t):
                         blocks_done.add(t.block)
                         return
                 if p.lemma in trigger_di_pron_verbs:  # i cani (si) occupano dei gatti
-                    if p.is_middle_pr():
+                    if p.is_middle_mr():
                         notes.append(
                             f"{t.occurrence.upper()} introduces a genitive phrase licensed by {reflexive_infinitive_formation(p.lemma).upper()}"
                         )
@@ -126,7 +126,7 @@ def process_prev_block(prev_block: List[Tag], tags, notes, blocks_done, t):
                         t.pos = "DET:part"
                         blocks_done.add(t.block)
                         return
-                    elif m.is_middle_pr():  # 4 agosto 2020
+                    elif m.is_middle_pr():
                         if t.match_pn(m):  # si trovarono delle prove
                             notes.append(
                                 f"{t.occurrence.upper()} is a partitive article \

@@ -1,9 +1,9 @@
 from typing import List
 
-from ...Tag import Tag
 from ...data.improper_predicates import improper_predicates
 from ...data.verbs.auxiliaries import auxiliaries
 from ...data.verbs.inflected_verbs_pos import inflected_verbs_pos
+from ...Tag import Tag
 
 
 def mark_aux(item: List[int], tags: List[Tag]) -> None:
@@ -17,11 +17,22 @@ def mark_aux(item: List[int], tags: List[Tag]) -> None:
     elif len(tmp) == 2:
         if tmp[0].lemma in auxiliaries:
             tmp[0].note = aux
+            tmp[0].set_max_assignable_sem_roles(0)
     else:
         if tmp[0].lemma in auxiliaries:
             tmp[0].note = aux
+            tmp[0].set_max_assignable_sem_roles(0)
         if tmp[1].lemma in auxiliaries:
             tmp[1].note = aux
+            tmp[1].set_max_assignable_sem_roles(0)
+
+
+def mark_neg(item: List[int], tags: List[Tag]) -> None:
+    tmp = tags[item[0]].lemma
+    if tmp == "non":
+        tmp_tags = [tags[i] for i in item]
+        for t in tmp_tags:
+            t._is_neg_sv = True
 
 
 def detect_inflected_verbs(tags: List[Tag], indexes_proclisi):
@@ -30,13 +41,8 @@ def detect_inflected_verbs(tags: List[Tag], indexes_proclisi):
     for t in tags:
         if t.is_inflected_verb() and t.index not in indexes_done:
             indexes.append(list())
-            if t.index - 1 >= 0 and tags[t.index - 1].occ == "non":
-                indexes_done.add(t.index - 1)
-                indexes[-1].append(t.index - 1)
-                tags[t.index - 1]._is_inflected_verb = True
             indexes_done.add(t.index)
             indexes[-1].append(t.index)
-            t._is_inflected_verb = True
             for i in range(t.index + 1, len(tags)):
                 if tags[i].is_adverb() or (
                     tags[i].is_verb()
@@ -44,7 +50,6 @@ def detect_inflected_verbs(tags: List[Tag], indexes_proclisi):
                     and tags[i].pos not in inflected_verbs_pos
                 ):
                     indexes[-1].append(tags[i].index)
-                    tags[i]._is_inflected_verb = True
                     indexes_done.add(tags[i].index)
                 else:
                     break
@@ -58,4 +63,11 @@ def detect_inflected_verbs(tags: List[Tag], indexes_proclisi):
     wording_proclisi_sv = [
         " ".join(tags[i]._occurrence for i in item) for item in indexes_proclisi_sv
     ]
+
+    for list_ in indexes_proclisi_sv:
+        for index in list_:
+            index: int
+            tags[index]._is_inflected_verb = True
+    for item in indexes_proclisi_sv:
+        mark_neg(item, tags)
     return wording_proclisi_sv, indexes_proclisi_sv

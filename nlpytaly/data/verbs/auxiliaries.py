@@ -1,3 +1,11 @@
 from typing import Set
 
-auxiliaries: Set[str] = {"avere", "essere", "essere|stare", "stare", "venire"}
+auxiliaries: Set[str] = {
+    "andare",
+    "avere",
+    "essere",
+    "essere|stare",
+    "rimanere",
+    "stare",
+    "venire",
+}

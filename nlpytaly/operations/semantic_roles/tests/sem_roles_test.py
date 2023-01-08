@@ -3,11 +3,13 @@ from typing import List
 import pytest
 
 from nlpytaly import NLPYTALY
-from ..SemRole import (
+from nlpytaly.operations.semantic_roles.SemRole.consts import ACTV, ACTV_S, PASSV
+
+from ..SemRole.SemRole import (
     AbstractSemRole,
-    OrdinarySemRole,
     CausativeSemRole,
     DativeSemRole,
+    OrdinarySemRole,
 )
 from ..utils import list_equals_no_order
 
@@ -21,9 +23,9 @@ def test1(tagger):
     result = tagger.tag("Mario si è fatto visitare dal medico.")
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("MARIO", ["visitare"], "PASSIVE"),
-        OrdinarySemRole("IL MEDICO", ["visitare"], "ACTIVE"),
-        CausativeSemRole("MARIO", ["fare"], "ACTIVE", "visitare"),
+        OrdinarySemRole("MARIO", ["visitare"], PASSV),
+        OrdinarySemRole("IL MEDICO", ["visitare"], ACTV),
+        CausativeSemRole("MARIO", ["fare"], ACTV, "visitare"),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -32,9 +34,9 @@ def test2(tagger):
     result = tagger.tag("Mario si è fatto comprare il pane da Luigi.")
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        CausativeSemRole("MARIO", ["fare"], "ACTIVE", "comprare"),
-        OrdinarySemRole("LUIGI", ["comprare"], "ACTIVE"),
-        OrdinarySemRole("IL PANE", ["comprare"], "PASSIVE"),
+        CausativeSemRole("MARIO", ["fare"], ACTV, "comprare"),
+        OrdinarySemRole("LUIGI", ["comprare"], ACTV),
+        OrdinarySemRole("IL PANE", ["comprare"], PASSV),
         DativeSemRole("MARIO", ["comprare"]),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
@@ -44,9 +46,9 @@ def test3(tagger):
     result = tagger.tag("Il professore si è fatto portare l'aranciata dal bambino.")
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        CausativeSemRole("IL PROFESSORE", ["fare"], "ACTIVE", "portare"),
-        OrdinarySemRole("IL BAMBINO", ["portare"], "ACTIVE"),
-        OrdinarySemRole("L' ARANCIATA", ["portare"], "PASSIVE"),
+        CausativeSemRole("IL PROFESSORE", ["fare"], ACTV, "portare"),
+        OrdinarySemRole("IL BAMBINO", ["portare"], ACTV),
+        OrdinarySemRole("L' ARANCIATA", ["portare"], PASSV),
         DativeSemRole("IL PROFESSORE", ["portare"]),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
@@ -56,7 +58,7 @@ def test4(tagger):
     result = tagger.tag("Mario parla a Luigi.")
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("MARIO", ["parlare"], "ACTIVE"),
+        OrdinarySemRole("MARIO", ["parlare"], ACTV),
         DativeSemRole("LUIGI", ["parlare"]),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
@@ -66,32 +68,21 @@ def test5(tagger):
     result = tagger.tag("Mario ha comprato il gelato al bambino.")
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("MARIO", ["comprare"], "ACTIVE"),
-        OrdinarySemRole("IL GELATO", ["comprare"], "PASSIVE"),
+        OrdinarySemRole("MARIO", ["comprare"], ACTV),
+        OrdinarySemRole("IL GELATO", ["comprare"], PASSV),
         DativeSemRole("IL BAMBINO", ["comprare"]),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
-
-
-# def test6(tagger):
-#     result = tagger.tag("Mario si è fatto arrivare un pacco.")
-#     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
-#     expected_sem_roles = [
-#         CausativeSemRole("MARIO", ["fare"], "ACTIVE", "arrivare"),
-#         # TODO
-#         # OrdinarySemRole("IL PACCO", ["arrivare"], "ACTIVE"),
-#     ]
-#     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
 
 def test7(tagger):
     result = tagger.tag("Mario si fa aprire la porta dal suo amico.")
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        CausativeSemRole("MARIO", ["fare"], "ACTIVE", "aprire"),
+        CausativeSemRole("MARIO", ["fare"], ACTV, "aprire"),
         DativeSemRole("MARIO", ["aprire"]),
-        OrdinarySemRole("IL SUO AMICO", ["aprire"], "ACTIVE"),
-        OrdinarySemRole("LA PORTA", ["aprire"], "PASSIVE"),
+        OrdinarySemRole("IL SUO AMICO", ["aprire"], ACTV),
+        OrdinarySemRole("LA PORTA", ["aprire"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -100,9 +91,9 @@ def test8(tagger):
     result = tagger.tag("Luca fece giocare l'asso a Piero")
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        CausativeSemRole("LUCA", ["fare"], "ACTIVE", "giocare"),
-        OrdinarySemRole("PIERO", ["giocare"], "ACTIVE"),
-        OrdinarySemRole("L' ASSO", ["giocare"], "PASSIVE"),
+        CausativeSemRole("LUCA", ["fare"], ACTV, "giocare"),
+        OrdinarySemRole("PIERO", ["giocare"], ACTV),
+        OrdinarySemRole("L' ASSO", ["giocare"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -111,8 +102,8 @@ def test9(tagger):
     result = tagger.tag("Maria ha dato la cartellina alla sorella")
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("MARIA", ["dare"], "ACTIVE"),
-        OrdinarySemRole("LA CARTELLINA", ["dare"], "PASSIVE"),
+        OrdinarySemRole("MARIA", ["dare"], ACTV),
+        OrdinarySemRole("LA CARTELLINA", ["dare"], PASSV),
         DativeSemRole("LA SORELLA", ["dare"]),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
@@ -133,9 +124,7 @@ def test10(tagger):
     assert tags[0].syntactic_role == "SOGG"
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
-    expected_sem_roles = [
-        OrdinarySemRole("LUIGI", ["pensare"], "ACTIVE"),
-    ]
+    expected_sem_roles = [OrdinarySemRole("LUIGI", ["pensare"], ACTV)]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
 
@@ -157,8 +146,8 @@ def test11(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("LUIGI", ["mangiare"], "ACTIVE"),
-        OrdinarySemRole("LE MELE", ["mangiare"], "PASSIVE"),
+        OrdinarySemRole("LUIGI", ["mangiare"], ACTV),
+        OrdinarySemRole("LE MELE", ["mangiare"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -180,9 +169,9 @@ def test12(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("QUALCUNO\\QUALCOSA", ["mangiare"], "ACTIVE"),
-        OrdinarySemRole("LE MELE", ["mangiare"], "PASSIVE"),
-        OrdinarySemRole("MARIO", ["guarire"], "PASSIVE"),
+        OrdinarySemRole("QUALCUNO\\QUALCOSA", ["mangiare"], ACTV),
+        OrdinarySemRole("LE MELE", ["mangiare"], PASSV),
+        OrdinarySemRole("MARIO", ["guarire"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -192,18 +181,7 @@ def test13(tagger):
     tags = tagger.tags
 
     # testa il blocco
-    assert [t.block for t in tags] == [
-        1,
-        1,
-        2,
-        2,
-        2,
-        2,
-        3,
-        3,
-        4,
-        4,
-    ]
+    assert [t.block for t in tags] == [1, 1, 2, 2, 2, 2, 3, 3, 4, 4]
 
     # testa la diathesis
     for t in tags:
@@ -214,33 +192,12 @@ def test13(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("I LIBRI", ["riportare"], "PASSIVE"),
-        OrdinarySemRole("LA STUDENTESSA", ["riportare"], "ACTIVE"),
-        CausativeSemRole("LA COLLEGA", ["fare"], "ACTIVE", "riportare"),
+        OrdinarySemRole("I LIBRI", ["riportare"], PASSV),
+        OrdinarySemRole("LA STUDENTESSA", ["riportare"], ACTV),
+        CausativeSemRole("LA COLLEGA", ["fare"], ACTV, "riportare"),
         DativeSemRole("LA COLLEGA", ["riportare"]),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
-
-
-# def test14(tagger):
-#     result = tagger.tag("Loro vogliono bene solo a noi")
-#     tags = tagger.tags
-
-#     # testa il blocco
-#     assert [t.block for t in tags] == [1, 2, 2, 2, 3, 3]
-
-#     # testa la diathesis
-#     for t in tags:
-#         if t.block == 2:
-#             assert t.is_active()
-#     assert tags[0].ruolo_sintattico == "SOGG"
-
-#     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
-#     expected_sem_roles = [
-#         OrdinarySemRole("LORO", ["amare"], "ACTIVE"),
-#         OrdinarySemRole("NOI", ["amare"], "PASSIVE"),
-#     ]
-#     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
 
 def test15(tagger):
@@ -259,9 +216,9 @@ def test15(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("I PROFESSORI", ["concedere"], "ACTIVE"),
+        OrdinarySemRole("I PROFESSORI", ["concedere"], ACTV),
         DativeSemRole("I PROFESSORI", ["concedere"]),
-        OrdinarySemRole("UNA PAUSA", ["concedere"], "PASSIVE"),
+        OrdinarySemRole("UNA PAUSA", ["concedere"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -282,8 +239,8 @@ def test16(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("I PROFESSORI", ["lavare"], "ACTIVE"),
-        OrdinarySemRole("I PROFESSORI", ["lavare"], "PASSIVE"),
+        OrdinarySemRole("I PROFESSORI", ["lavare"], ACTV),
+        OrdinarySemRole("I PROFESSORI", ["lavare"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -303,10 +260,10 @@ def test17(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("LA POLIZIA ANTISOMMOSSA", ["ARRIVARE"], "ACTIVE"),
-        OrdinarySemRole("LA POLIZIA ANTISOMMOSSA ARRIVATA", ["INTERVENIRE"], "ACTIVE"),
-        OrdinarySemRole(r"QUALCUNO\QUALCOSA", ["DISPERDERE"], "ACTIVE"),
-        OrdinarySemRole("DEI MANIFESTANTI", ["DISPERDERE"], "PASSIVE"),
+        OrdinarySemRole("LA POLIZIA ANTISOMMOSSA", ["ARRIVARE"], ACTV),
+        OrdinarySemRole("LA POLIZIA ANTISOMMOSSA ARRIVATA", ["INTERVENIRE"], ACTV),
+        OrdinarySemRole(r"QUALCUNO\QUALCOSA", ["DISPERDERE"], ACTV),
+        OrdinarySemRole("DEI MANIFESTANTI", ["DISPERDERE"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -324,12 +281,12 @@ def test18(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("LE AUTORITÀ", ["INTERROMPERE"], "ACTIVE"),
-        OrdinarySemRole("LA MANIFESTAZIONE", ["INTERROMPERE"], "PASSIVE"),
-        OrdinarySemRole("QUESTI GIOVANI", ["ROMPERE"], "ACTIVE"),
-        OrdinarySemRole("DELLE VETRATE", ["ROMPERE"], "ACTIVE_SI"),
-        OrdinarySemRole(r"QUALCUNO\QUALCOSA", ["LANCIARE"], "ACTIVE"),
-        OrdinarySemRole("DEI SAMPIETRINI", ["LANCIARE"], "PASSIVE"),
+        OrdinarySemRole("LE AUTORITÀ", ["INTERROMPERE"], ACTV),
+        OrdinarySemRole("LA MANIFESTAZIONE", ["INTERROMPERE"], PASSV),
+        OrdinarySemRole("QUESTI GIOVANI", ["ROMPERE"], ACTV),
+        OrdinarySemRole("DELLE VETRATE", ["ROMPERE"], ACTV_S),
+        OrdinarySemRole(r"QUALCUNO\QUALCOSA", ["LANCIARE"], ACTV),
+        OrdinarySemRole("DEI SAMPIETRINI", ["LANCIARE"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -349,10 +306,10 @@ def test19(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("I MANIFESTANTI", ["AVVISARE"], "PASSIVE"),
-        OrdinarySemRole("LA POLIZIA", ["AVVISARE"], "ACTIVE"),
-        OrdinarySemRole(r"QUALCUNO\QUALCOSA", ["USARE"], "ACTIVE"),
-        OrdinarySemRole("DEI MEGAFONI", ["USARE"], "PASSIVE"),
+        OrdinarySemRole("I MANIFESTANTI", ["AVVISARE", "precedentemente"], PASSV),
+        OrdinarySemRole("LA POLIZIA", ["AVVISARE", "precedentemente"], ACTV),
+        OrdinarySemRole(r"QUALCUNO\QUALCOSA", ["USARE"], ACTV),
+        OrdinarySemRole("DEI MEGAFONI", ["USARE"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -370,11 +327,11 @@ def test20(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("I DISORDINI", ["CAUSARE"], "PASSIVE"),
-        OrdinarySemRole("QUESTI MANIFESTANTI", ["CAUSARE"], "ACTIVE"),
-        CausativeSemRole("I DISORDINI CAUSATI", ["fare"], "ACTIVE", "pronunciare"),
-        OrdinarySemRole("IL PRIMO MINISTRO", ["PRONUNCIARE"], "ACTIVE"),
-        OrdinarySemRole("LE SEGUENTI PAROLE", ["PRONUNCIARE"], "PASSIVE"),
+        OrdinarySemRole("I DISORDINI", ["CAUSARE"], PASSV),
+        OrdinarySemRole("QUESTI MANIFESTANTI", ["CAUSARE"], ACTV),
+        CausativeSemRole("I DISORDINI CAUSATI", ["fare"], ACTV, "pronunciare"),
+        OrdinarySemRole("IL PRIMO MINISTRO", ["PRONUNCIARE"], ACTV),
+        OrdinarySemRole("LE SEGUENTI PAROLE", ["PRONUNCIARE"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -390,9 +347,9 @@ def test21(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("LE IMMAGINI", ["VEDERE"], "PASSIVE"),
-        OrdinarySemRole("LE IMMAGINI VISTE", ["SCIOCCARE"], "ACTIVE"),
-        OrdinarySemRole("GLI ITALIANI", ["SCIOCCARE"], "PASSIVE"),
+        OrdinarySemRole("LE IMMAGINI", ["VEDERE"], PASSV),
+        OrdinarySemRole("LE IMMAGINI VISTE", ["SCIOCCARE"], ACTV),
+        OrdinarySemRole("GLI ITALIANI", ["SCIOCCARE"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -410,10 +367,10 @@ def test22(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("I MANIFESTANTI", ["VIOLARE"], "ACTIVE"),
-        OrdinarySemRole("LE REGOLE IMPOSTE", ["VIOLARE"], "PASSIVE"),
-        OrdinarySemRole("LE REGOLE", ["IMPORRE"], "PASSIVE"),
-        OrdinarySemRole("IL COVID", ["IMPORRE"], "ACTIVE"),
+        OrdinarySemRole("I MANIFESTANTI", ["VIOLARE"], ACTV),
+        OrdinarySemRole("LE REGOLE IMPOSTE", ["VIOLARE"], PASSV),
+        OrdinarySemRole("LE REGOLE", ["IMPORRE"], PASSV),
+        OrdinarySemRole("IL COVID", ["IMPORRE"], ACTV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)
 
@@ -429,7 +386,24 @@ def test23(tagger):
 
     actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
     expected_sem_roles = [
-        OrdinarySemRole("IL RAZZISMO", ["DANNEGGIARE"], "ACTIVE"),
-        OrdinarySemRole("L' ITALIA", ["DANNEGGIARE"], "PASSIVE"),
+        OrdinarySemRole("IL RAZZISMO", ["DANNEGGIARE"], ACTV),
+        OrdinarySemRole("L' ITALIA", ["DANNEGGIARE"], PASSV),
+    ]
+    list_equals_no_order(actual_sem_roles, expected_sem_roles)
+
+
+def test24(tagger):
+    result = tagger.tag("La maestra sta spesso elogiando i ragazzi")
+    tags = tagger.tags
+
+    # testa la diathesis
+    for t in tags:
+        if t.block == 2:
+            assert t.is_active()
+
+    actual_sem_roles: List[AbstractSemRole] = result["sem_roles"]
+    expected_sem_roles = [
+        OrdinarySemRole("LA MAESTRA", ["ELOGIARE"], ACTV),
+        OrdinarySemRole("I RAGAZZI", ["ELOGIARE"], PASSV),
     ]
     list_equals_no_order(actual_sem_roles, expected_sem_roles)

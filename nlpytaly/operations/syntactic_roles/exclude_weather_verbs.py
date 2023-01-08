@@ -1,7 +1,7 @@
 from typing import List
 
-from ...Tag import Tag
 from ...data.verbs.weather_verbs import weather_verbs
+from ...Tag import Tag
 
 
 def exclude_weather_verbs(tags: List[Tag], indici_verbi_flessi):

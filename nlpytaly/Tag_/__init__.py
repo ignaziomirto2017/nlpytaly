@@ -1,27 +1,9 @@
-from typing import List, Tuple, Iterable
+from typing import Iterable, List, Tuple
 
-from .common_data import *
-from ..data.clitics import reflexive_clitics, clitics
+from ..data.clitics import clitics, reflexive_clitics
 
 
 class Tag(object):
-    from .set_pgn_methods import set_g, set_gn, set_n, set_p, set_pn
-    from .is_pos_methods import (
-        is_adjective,
-        is_adverb,
-        is_article,
-        is_gerund,
-        is_infinitive,
-        is_inflected_verb,
-        is_noun,
-        is_past_participle,
-        is_preposition,
-        is_pro_pers,
-        is_pro_poss,
-        is_verb,
-        is_npr,
-    )
-
     def __init__(self, occurrence, pos, lemma, note="-"):
         self._occurrence: str = occurrence
         self.pos: str = pos
@@ -38,9 +20,11 @@ class Tag(object):
 
         self.all_tags: List["Tag"] = list()
         self._diathesis = None
+        self._is_neg_sv = None
         self.has_subject = None
         self._is_impersonal = None
         self._cov_sub = ""
+        self._encl_od = ""
         self._syntactic_role = None
         self._is_inflected_verb = None
         self._is_sub_obj_candidate = None
@@ -53,15 +37,38 @@ class Tag(object):
         # current number of sem roles per tag per verbal block
         self.cur_no_sr = {}
 
-    def __eq__(self, other):
-        return (
-            self.occ == other.occ
-            and self.pos == other.pos
-            and self.lemma == other.lemma
-            and self.gender == other.gender
-            and self.number == other.number
-            and self.person == other.person
-        )
+        # assignable semantic roles from self
+        self.assignable_sem_roles = 3
+        self.assigned_sem_roles = 0
+
+    from .is_pos_methods import (
+        is_adjective,
+        is_adverb,
+        is_article,
+        is_card,
+        is_gerund,
+        is_infinitive,
+        is_inflected_verb,
+        is_negative_inflected_verb,
+        is_noun,
+        is_npr,
+        is_past_participle,
+        is_preposition,
+        is_pro_indef,
+        is_pro_pers,
+        is_pro_poss,
+        is_verb,
+    )
+    from .set_pgn_methods import set_g, set_gn, set_n, set_p, set_pn
+
+    def can_assign_sem_roles(self):
+        return self.assigned_sem_roles < self.assignable_sem_roles and not self.is_aux()
+
+    def inc_assigned_sem_roles(self):
+        self.assigned_sem_roles += 1
+
+    def set_max_assignable_sem_roles(self, m: int):
+        self.assignable_sem_roles = m
 
     def sem_role_allowed(self, verb: Tuple[int]):
         return self.cur_no_sr.get(verb, 0) < self.max_no_sr.get(verb, 2)
@@ -74,15 +81,7 @@ class Tag(object):
 
     @property
     def cov_sub(self):
-        d = {
-            "": "",
-            1: "IO",
-            2: "TU",
-            3: "LUI|LEI",
-            4: "NOI",
-            5: "VOI",
-            6: "LORO",
-        }
+        d = {"": "", 1: "IO", 2: "TU", 3: "LUI|LEI", 4: "NOI", 5: "VOI", 6: "LORO"}
         return d[self._cov_sub]
 
     @cov_sub.setter
@@ -97,17 +96,27 @@ class Tag(object):
             return self_block[0].cov_sub
 
     @property
+    def encl_od(self):
+        return self._encl_od
+
+    @encl_od.setter
+    def encl_od(self, encl_od: str):
+        assert encl_od in ("1S", "2S", "3SM", "3SF", "1P", "2P", "3PM", "3PF")
+        for x in self.get_same_block_tags():
+            x._encl_od = encl_od
+
+    def get_encl_od(self):
+        assert self.is_verb()
+        if self_block := self.get_same_block_tags():
+            return self_block[0].encl_od
+
+    @property
     def syntactic_role(self):
         return self._syntactic_role
 
     @syntactic_role.setter
     def syntactic_role(self, role: str):
-        assert role in [
-            "SOGG",
-            "OD",
-            "PN",
-            "SOGG|OD",
-        ]
+        assert role in ["SOGG", "OD", "PN", "SOGG|OD"]
         self._syntactic_role = role
 
     @property
@@ -156,17 +165,6 @@ class Tag(object):
     @lemma.setter
     def lemma(self, lemma):
         self._lemma = lemma
-
-    def __str__(self):
-        return (
-            f"{self.index} {self.block} "
-            f"{self.occurrence} {self.pos} {self.lemma} "
-            f"{self.gender} {self.number} "
-            f"{self.person} {self.note}"
-        )
-
-    def __repr__(self):
-        return str(self)
 
     def distance(self, other) -> int:
         return abs(self.index - other.index)
@@ -354,11 +352,7 @@ class Tag(object):
     def is_in_SN_block(self) -> bool:
         sb = self.get_same_block_tags()
         first_tag = sb[0]
-        res = [
-            first_tag.is_article(),
-            "NPR" in first_tag.pos,
-            "NOM" in first_tag.pos,
-        ]
+        res = [first_tag.is_article(), "NPR" in first_tag.pos, "NOM" in first_tag.pos]
         return any(res)
 
     def get_block_clitics(self) -> List["Tag"]:
@@ -390,6 +384,7 @@ class Tag(object):
             "block": self.block,
             "note": self.note,
             "cov_sub": self.cov_sub,
+            "_is_neg_sv": self._is_neg_sv,
         }
 
     def next(self) -> "Tag":
@@ -398,11 +393,32 @@ class Tag(object):
             return self.all_tags[index + 1]
         return None
 
-    def prev(self) -> "Tag":
+    def prev(self, step=1) -> "Tag":
         index = self.index
-        if index - 1 >= 0:
-            return self.all_tags[index - 1]
+        if index - step >= 0:
+            return self.all_tags[index - step]
         return None
 
     def is_marked(self):
         return any(x.startswith("PRED") for x in dir(self))
+
+    def __eq__(self, other):
+        return (
+            self.occ == other.occ
+            and self.pos == other.pos
+            and self.lemma == other.lemma
+            and self.gender == other.gender
+            and self.number == other.number
+            and self.person == other.person
+        )
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return (
+            f"{self.index} {self.block} "
+            f"{self.occurrence} {self.pos} {self.lemma} "
+            f"{self.gender} {self.number} "
+            f"{self.person} {self.note}"
+        )

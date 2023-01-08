@@ -15,3 +15,8 @@ pred_sem_pper = "PRED_SEM_PPER"
 
 pred_sem_mettere_prep = "PRED_SEM_METTERE_PREP"
 pred_syn_mettere_prep = "PRED_SYN_METTERE_PREP"
+
+pred_syn_mettere_prep_ov = "PRED_SEM_METTERE_PREP_OPTIONAL_VERB"
+
+pred_sem_supp_v_adv = "PRED_SEM_SUPP_v_adv"
+pred_syn_supp_v_adv = "PRED_SYN_SUPP_v_adv"

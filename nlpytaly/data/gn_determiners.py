@@ -2,7 +2,7 @@ from typing import Dict
 
 gn_determiners: Dict[str, str] = {
     "gl'": "m+p",
-    "gli": "m+s|p",
+    "gli": "m+p",
     "i": "m+p",
     "il": "m+s",
     "l'": "m|f+s",
@@ -27,4 +27,5 @@ gn_determiners: Dict[str, str] = {
     "un": "m+s",
     "una": "f+s",
     "uno": "m+s",
+    "nessun": "m+s",
 }

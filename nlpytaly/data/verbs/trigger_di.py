@@ -58,7 +58,9 @@ trigger_di_pron_2_verbs: Set[str] = {
     "fidare",
     "impicciare",
     "infatuare",
+    "invaghire",
     "pentire",
+    "piccare",
     "vergognare",
 }
 

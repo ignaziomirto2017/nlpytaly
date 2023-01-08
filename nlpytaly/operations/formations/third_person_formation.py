@@ -3,8 +3,10 @@ _no_isc = [
     "apparire",
     "applaudire",
     "aprire",
+    "assalire",
     "avvenire",
     "avvertire",
+    "bollire",
     "compire",
     "contravvenire",
     "convenire",
@@ -29,10 +31,12 @@ _no_isc = [
     "presentire",
     "proseguire",
     "riaprire",
+    "ribollire",
     "ricoprire",
     "ricucire",
     "riempire",
     "rinvenire",
+    # "ripartire",  # riparto o ripartisco?
     "risalire",
     "riscoprire",
     "riuscire",
@@ -47,6 +51,7 @@ _no_isc = [
     "soffrire",
     "susseguire",
     "svenire",
+    "trasalire",
     "udire",
     "uscire",
     "venire",
@@ -75,6 +80,8 @@ def third_person_formation(inf: str, include_si=False):
         r = "rifà"
     elif inf == "dire":
         r = "dice"
+    elif inf == "predire":
+        r = "predice"
     elif inf == "disdire":
         r = "disdice"
     elif inf == "morire":
@@ -87,9 +94,19 @@ def third_person_formation(inf: str, include_si=False):
         r = "benedice"
     elif inf == "comparire":
         r = "compare"
+    elif inf == "assalire":
+        r = "assale"
     elif inf.endswith("olere"):
         r = inf.replace("olere", "uole")
     elif inf.endswith("eguire"):
+        r = inf.replace("ire", "e")
+    elif inf.endswith("pulire"):
+        r = inf.replace("re", "sce")
+    elif inf.endswith("llire"):
+        r = inf.replace("ire", "isce")
+    elif inf.endswith("lire"):
+        r = inf.replace("ire", "isce")
+    elif inf.endswith("lire"):
         r = inf.replace("ire", "e")
     elif inf.endswith("arre"):  # attrarre
         r = inf.replace("rre", "e")

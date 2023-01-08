@@ -1,4 +1,15 @@
-def past_part_formation(inf: str):
+from typing import Dict
+
+irregular: Dict[str, str] = {
+    "contraffare": "contraffatto",
+    "dire": "detto",
+    "fare": "fatto",
+    "restringere": "ristretto",
+    "sopraffare": "sopraffatto",
+}
+
+
+def past_part_formation(inf: str, female=False):
     """
     >>> past_part_formation("mangiare")
     'mangiato'
@@ -26,14 +37,17 @@ def past_part_formation(inf: str):
     'nato'
     >>> past_part_formation("bandire")
     'bandito'
+    >>> past_part_formation("rasare")
+    'rasato'
     >>> past_part_formation("correre")
     'corso'
     >>> past_part_formation("redigere")
     'redatto'
+    >>> past_part_formation("offendere")
+    'offeso'
     """
     inf = inf.lower()
     rules = [
-        ("restringere", 10, "istretto"),
         ("infliggere", 5, "tto"),
         ("trafiggere", 5, "tto"),
         ("stringere", 6, "etto"),
@@ -43,12 +57,16 @@ def past_part_formation(inf: str):
         ("redigere", 5, "atto"),
         ("mpere", 5, "tto"),
         ("gnere", 5, "nto"),
+        ("primere", 5, "esso"),
+        ("offrire", 4, "erto"),
+        ("porgere", 4, "to"),
         ("assumere", 4, "nto"),
         ("radere", 4, "so"),
         ("scorrere", 4, "so"),
         ("scoperta", 4, "erto"),
         ("inferire", 3, "to"),
         ("astidire", 2, "to"),
+        ("schifare", 2, "to"),
         ("cuotere", 6, "osso"),
         ("rendere", 5, "so"),
         ("figgere", 5, "sso"),
@@ -63,7 +81,7 @@ def past_part_formation(inf: str):
         ("grafare", 2, "to"),
         ("gredire", 2, "to"),
         ("uovere", 6, "osso"),
-        ("ondere", 6, "uso"),
+        ("fondere", 6, "uso"),
         ("ellere", 6, "ulso"),
         ("gliere", 6, "lto"),
         ("endere", 5, "so"),
@@ -86,30 +104,38 @@ def past_part_formation(inf: str):
         ("rgere", 4, "so"),
         ("prire", 4, "erto"),
         ("scere", 3, "iuto"),
+        ("cere", 3, "iuto"),
+        ("pedire", 2, "to"),  # impedire
+        ("edire", 3, "etto"),
         ("edere", 3, "uto"),
-        ("adere", 3, "uto"),
-        ("dere", 4, "so"),
-        ("ggere", 5, "tto"),
+        ("adere", 3, "uto"),  # accadere/accaduto
+        ("ggere", 5, "tto"),  # distruggere/distrutto
+        ("dere", 4, "so"),  # radere/raso
+        ("stere", 3, "ito"),  # assistere/assistito
         ("gere", 4, "to"),
+        ("cere", 4, "to"),  # estorcere
         ("urre", 4, "otto"),
         ("cere", 3, "iuto"),
         ("bere", 3, "evuto"),
         ("arre", 3, "tto"),
         ("orre", 3, "sto"),
-        ("dire", 3, "etto"),
-        ("fare", 4, "fatto"),
-        ("ere", 3, "uto"),
         ("are", 2, "to"),
+        ("ere", 3, "uto"),
         ("ire", 2, "to"),
     ]
     # rules = sorted(rules, reverse=True, key=lambda x: (len(x[0]), x[1]))
     # print(rules)
-    for r in rules:
-        if inf.endswith(r[0]):
-            if r[1] == 0:
-                return inf + r[2]
-            else:
-                return inf[: -r[1]] + r[2]
+    inf = inf.lower()
+    if inf in irregular:
+        return irregular[inf]
+    else:
+        for r in rules:
+            if inf.endswith(r[0]):
+                new_suffix = r[2] if not female else r[2][:-1] + "a"
+                if r[1] == 0:
+                    return inf + new_suffix
+                else:
+                    return inf[: -r[1]] + new_suffix
     return ""
 
 

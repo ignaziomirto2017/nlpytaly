@@ -1,35 +1,59 @@
 from typing import Dict
 
+_syn = "synonym"
+_pos = "pos"
+_lemma = "multiword"
+
+
 data: Dict[str, dict] = {
     "a": {
-        "braccio": {"end": True, "sinonimo": "improvvisando",},
-        "cazzo": {"end": True, "sinonimo": "a vanvera",},
-        "intuito": {"end": True, "sinonimo": "intuitivamente",},
-        "lungo": {"end": True, "sinonimo": "lungamente",},
-        "meraviglia": {"end": True, "sinonimo": "meravigliosamente",},
-        "sufficienza": {"end": True, "sinonimo": "sufficientemente",},
-        "vanvera": {"end": True, "sinonimo": "troppo",},
+        "braccio": {"end": True, _syn: "improvvisando"},
+        "casaccio": {"end": True, _syn: "a vanvera"},
+        "cazzo": {"end": True, _syn: "a vanvera"},
+        "intuito": {"end": True, _syn: "intuitivamente"},
+        "lungo": {"end": True, _syn: "lungamente"},
+        "meraviglia": {"end": True, _syn: "meravigliosamente"},
+        "sufficienza": {"end": True, _syn: "sufficientemente"},
+        "vanvera": {"end": True, _syn: "a casaccio"},
     },
-    "al": {"contempo": {"end": True, "sinonimo": "contemporaneamente",},},
+    "al": {
+        "contempo": {"end": True, _syn: "contemporaneamente"},
+        # TODO:
+        # Conflitto con mettere al corrente
+        # "corrente": {
+        #     "end": True,
+        #     _syn: "sa",
+        # },
+    },
     "alla": {
-        "follia": {"end": True, "sinonimo": "follemente",},
-        "lettera": {"end": True, "sinonimo": "letteralmente",},
-        "svelta": {"end": True, "sinonimo": "sveltamente",},
-        "perfezione": {"end": True, "sinonimo": "perfettametne",},
+        "follia": {"end": True, _syn: "follemente"},
+        "lettera": {"end": True, _syn: "letteralmente"},
+        "svelta": {"end": True, _syn: "rapidamente"},
+        "perfezione": {"end": True, _syn: "perfettametne"},
     },
     "all'": {
-        "improvviso": {"end": True, "sinonimo": "improvvisamente",},
-        "oscuro": {"end": True, "sinonimo": "ignaro", "pos": "ADJ"},
+        "improvviso": {"end": True, _syn: "improvvisamente"},
+        "oscuro": {"end": True, _syn: "ignaro", _pos: "ADJ"},
+    },
+    "con": {
+        "attenzione": {"end": True, _syn: "attentamente"},
+        "cura": {"end": True, _syn: "accuratamente"},
+    },
+    "da": {
+        "vigliacco": {"end": True, _syn: "vigliaccamente"},
+        "codardo": {"end": True, _syn: "vigliaccamente"},
     },
     "di": {
-        "botto": {"end": True, "sinonimo": "improvvisamente",},
-        "getto": {"end": True, "sinonimo": "d'impulso",},
-        "rilievo": {"end": True, "sinonimo": "molto importante",},
-        "punto": {"in": {"bianco": {"end": True, "sinonimo": "improvvisamente"}}},
+        "botto": {"end": True, _syn: "improvvisamente"},
+        "getto": {"end": True, _syn: "d'impulso"},
+        "rilievo": {"end": True, _syn: "importante"},
+        "punto": {"in": {"bianco": {"end": True, _syn: "improvvisamente"}}},
     },
+    "due": {"passi": {"end": True, _syn: "passeggiata"}},
     "in": {
-        "apparenza": {"end": True, "sinonimo": "apparentemente",},
-        "sostanza": {"end": True, "sinonimo": "sostanzialmente",},
-        "tutto": {"end": True, "sinonimo": "complessivamente",},
+        "apparenza": {"end": True, _syn: "apparentemente"},
+        "fretta": {"e": {"furia": {"end": True, _syn: "precipitosamente"}}},
+        "sostanza": {"end": True, _syn: "sostanzialmente"},
+        "tutto": {"end": True, _syn: "complessivamente"},
     },
 }

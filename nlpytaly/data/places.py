@@ -35,6 +35,7 @@ places: Set[str] = {
     "Ferrara",
     "Firenze",
     "Foggia",
+    "Forcella",
     "Frosinone",
     "Genova",
     "Gorizia",

@@ -1,4 +1,4 @@
-from .common_data import *
+from .common_data import adj_trigger_di, determiners
 
 
 def process_same_block(t_block, tags, notes, blocks_done, t):

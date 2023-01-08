@@ -2,8 +2,8 @@ from typing import List
 
 import pytest
 
-from .Tag import Tag
-from .nlpytaly import NLPYTALY
+from ..nlpytaly import NLPYTALY
+from . import Tag
 
 
 @pytest.fixture()

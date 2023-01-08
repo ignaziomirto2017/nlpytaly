@@ -3,6 +3,7 @@ from typing import List
 import pytest
 
 from nlpytaly import NLPYTALY
+
 from ...Tag import Tag
 
 
@@ -58,7 +59,7 @@ def test6(tagger):
 
 
 def test7(tagger):
-    tagger.tag("Mario ha fatto la barba a Luigi")
+    tagger.tag("Mario ha fatto la barba a Luigi")  # Meronymy
     tags: List[Tag] = tagger.tags
     assert get_true_values(tags) == [0, 3, 4]
 
@@ -103,3 +104,33 @@ def test13(tagger):
     )
     tags: List[Tag] = tagger.tags
     assert get_true_values(tags) == [8, 9, 10, 14, 15]
+
+
+def test14(tagger):
+    tagger.tag("Mario prova odio per la politica")
+    tags: List[Tag] = tagger.tags
+    assert get_true_values(tags) == [0, 2]
+
+
+def test15(tagger):
+    tagger.tag("Io ho visto 4 simpatici amici")
+    tags: List[Tag] = tagger.tags
+    assert get_true_values(tags) == [0, 3, 4, 5]
+
+
+def test16(tagger):
+    tagger.tag("Io ho visto quattro simpatici amici")
+    tags: List[Tag] = tagger.tags
+    assert get_true_values(tags) == [0, 3, 4, 5]
+
+
+def test17(tagger):
+    tagger.tag("Mario ha fatto comprare l'orologio a un suo amico")
+    tags: List[Tag] = tagger.tags
+    assert get_true_values(tags) == [0, 4, 5]
+
+
+def test18(tagger):
+    tagger.tag("Mio cugino è partito")
+    tags: List[Tag] = tagger.tags
+    assert get_true_values(tags) == [0, 1]

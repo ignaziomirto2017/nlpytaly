@@ -1,21 +1,26 @@
 from typing import Set
 
-clitics: Set[str] = {
+clitics_dir_obj: Set[str] = {
     "mi",
     "ti",
-    "si",
-    "s'",
     "ci",
     "c'",
     "vi",
     "ne",
-    "gli",
     "la",
     "lo",
     "li",
     "le",
     "l'",
+}
+
+
+clitics: Set[str] = {
+    "si",
+    "s'",
+    "gli",
     "se",
+    "gliel'",
     "glielo",
     "gliela",
     "glieli",
@@ -26,7 +31,7 @@ clitics: Set[str] = {
     "ce",
     "me",
     "ve",
-}
+} | clitics_dir_obj
 
 clitics_atm_2 = {"me", "te", "ce", "ve", "se"}
 
@@ -45,4 +50,4 @@ reflexive_clitics: Set[str] = {
     "vi",
 }
 
-dir_obj_clitics: Set[str] = {"mi" "lo" "ci" "la" "l'" "le" "li" "ti" "vi"}
+dir_obj_clitics: Set[str] = {"mi", "lo", "ci", "la", "l'", "le", "li", "ti", "vi"}

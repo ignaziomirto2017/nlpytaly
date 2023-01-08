@@ -1,7 +1,7 @@
 from typing import List
 
-from ....Tag import Tag
 from ....data.cardinal_numbers import cardinal_numbers
+from ....Tag import Tag
 
 
 def gn_adjectives(tags: List[Tag]) -> None:

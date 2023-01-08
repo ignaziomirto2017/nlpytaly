@@ -86,6 +86,7 @@ astronomo
 atleta
 attaché
 ausiliario
+autista
 autoclavista
 autogruista
 autonoleggiatore
@@ -1181,7 +1182,6 @@ giallista
 giansenista
 giardiniere
 giavellottista
-gigante
 gigolo
 gincanista
 ginecologo
@@ -1192,11 +1192,11 @@ giocoliere
 gioielliere
 giornalaio
 giornalista
+giostraio
 giostratore
 giraffista
 giramondo
 giratore
-girino
 girovago
 giuda
 giudice
@@ -2106,7 +2106,6 @@ neotomista
 nepotista
 nerazzurro
 nero
-nessuno
 nettacessi
 nettatore
 netturbino
@@ -3889,6 +3888,7 @@ staffiere
 staffilatore
 stagionale
 stagionatore
+stagista
 stalliere
 stallone
 stampatore
@@ -4548,6 +4548,7 @@ yankee
 yes-man
 yogin
 yuppie
+youtuber
 zampognaro
 zanaio
 zangolatore

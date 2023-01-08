@@ -3,6 +3,7 @@ from typing import List
 import pytest
 
 from nlpytaly import NLPYTALY
+
 from ...Tag import Tag
 
 

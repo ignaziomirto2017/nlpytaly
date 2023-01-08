@@ -1,14 +1,15 @@
 import re
 import time
-from typing import Dict, Tuple, List, Union
+from typing import Dict, List, Tuple, Union
 
-from .Tag import Tag
 from .data.places import places
 from .data.verbs.weather_verbs import weather_verbs
 from .operations.create_blocks import fix
+from .Tag import Tag
 
 
 def line_to_clean_lines(line: str):
+    line = line.replace("»", "").replace("«", "").replace("’", "'")
     r = "([.;:!?])"
     lines = re.split(r, line)
     tmp = []
@@ -97,7 +98,7 @@ def search_x_phrase(tags, to_be_searched) -> Union[None, List[Tag]]:
                 block = x_phrase_si[0].block
                 x_phrase_si = [x for x in x_phrase_si if x.block == block]
 
-            if x_phrase_si[0].occ in {"da", "a"}:
+            if x_phrase_si[0].occ in {"da", "a", "ad"}:
                 x_phrase_si = x_phrase_si[1:]
             else:
                 suffixes = {
@@ -115,10 +116,9 @@ def search_x_phrase(tags, to_be_searched) -> Union[None, List[Tag]]:
                         x_phrase_si = [Tag(v, "DET:def", "il")] + tmp
                         break
 
-            if to_be_searched == ["a", "al"] and x_phrase_si:
+            if to_be_searched == ["a", "ad", "al"] and x_phrase_si:
                 if x_phrase_si[-1]._occurrence in places:
                     x_phrase_si = None
-
             return x_phrase_si
     else:
         x_phrase_si = None
@@ -126,8 +126,12 @@ def search_x_phrase(tags, to_be_searched) -> Union[None, List[Tag]]:
     return x_phrase_si
 
 
+def search_di_phrase(tags) -> List[Tag]:
+    return search_x_phrase(tags, to_be_searched=["di", "del"])
+
+
 def search_a_phrase(tags) -> List[Tag]:
-    return search_x_phrase(tags, to_be_searched=["a", "al"])
+    return search_x_phrase(tags, to_be_searched=["a", "ad", "al"])
 
 
 def search_da_phrase(tags) -> List[Tag]:
@@ -220,6 +224,38 @@ def find_covert_subjects(ov, result, tags, verbs_with_overt_subject):
                     )
 
 
+def find_enclitic_objects(ov, result, tags, verbs_with_overt_subject):
+    tmp = {
+        "mi": "1S",
+        "ti": "2S",
+        "lo": "3SM",
+        "la": "3SF",
+        "ci": "1P",
+        "vi": "2P",
+        "li": "3PM",
+        "le": "3PF",
+    }
+    tmp_wording = {
+        "1S": "ME",
+        "2S": "TE",
+        "3SM": "LUI",
+        "3SF": "LEI",
+        "1P": "NOI",
+        "2P": "VOI",
+        "3PM": "LORO",
+        "3PF": "LORO",
+    }
+    for t in tags:
+        t: Tag
+        verbal_block_indexes = t.get_same_block_indexes()
+        if t.is_infinitive() and t.occ[-2:] in tmp:
+            encl = tmp[t.occ[-2:]]
+            t.encl_od = encl
+            result.append(
+                f"The enclitic object of '{ov(verbal_block_indexes)}'  is '{tmp_wording[encl]}'."
+            )
+
+
 def wording_syntactic_roles(ruoli_sintattici_result: dict, tags: List[Tag]):
     def ov(t: tuple):  # da tupla a occorrenza, per i verbs (ov = occorrenze verbs)
         return " ".join(
@@ -231,6 +267,7 @@ def wording_syntactic_roles(ruoli_sintattici_result: dict, tags: List[Tag]):
 
     result: List[str] = []
     verbs_with_overt_subject = set()
+    verbs_with_no_enclisis = set()
     for k, v in sorted(ruoli_sintattici_result.items(), key=lambda x: x[1][1][0]):
         (
             ruolo,
@@ -241,16 +278,19 @@ def wording_syntactic_roles(ruoli_sintattici_result: dict, tags: List[Tag]):
                 f"The subject\\direct object of  '{ov(destinatario)}'  is '{on(k)}'."
             )
             verbs_with_overt_subject.add(destinatario)  # destinatario = verbo
+            verbs_with_no_enclisis.add(destinatario)
         elif "SOGG" in ruolo:
             result.append(f"The subject of  '{ov(destinatario)}'  is '{on(k)}'.")
             verbs_with_overt_subject.add(destinatario)  # destinatario = verbo
         elif "OD" in ruolo:
             result.append(f"The direct object of  '{ov(destinatario)}'  is  '{on(k)}'.")
+            verbs_with_no_enclisis.add(destinatario)
         elif "PN" in ruolo:
             result.append(
                 f"'{ov(destinatario)}' e '{on(k)}' formano un predicato nominale."
             )
     find_covert_subjects(ov, result, tags, verbs_with_overt_subject)
+    find_enclitic_objects(ov, result, tags, verbs_with_overt_subject)
 
     return result
 

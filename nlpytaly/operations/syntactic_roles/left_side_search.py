@@ -1,14 +1,9 @@
 from typing import List
 
-from ...Tag import Tag
 from ...data.verbs.intransitives import all_intransitives
+from ...Tag import Tag
 
-verbi_copulativi = {
-    "divenire",
-    "diventare",
-    "parere",
-    "sembrare",
-}
+verbi_copulativi = {"divenire", "diventare", "parere", "sembrare"}
 verbi_intransitivi_non_copulativi = all_intransitives - verbi_copulativi
 
 
@@ -19,6 +14,7 @@ def nearest_candidate_left(
     tags: List[Tag],
     step: int,
     d,
+    exclusions,
 ):
     result = []
     to_delete = []
@@ -44,20 +40,21 @@ def nearest_candidate_left(
                         or v_block[0].is_impersonal()
                     ):
                         break
-                    result.append([i, x])
-                    v_block = [x for x in v_block if not x.is_aux() and x.is_verb()]
-                    if v_block:
-                        verb = v_block[0].lemma
-                        if (
-                            verb in verbi_intransitivi_non_copulativi
-                            or v_block[0].is_passive()
-                        ) and not any(x.is_causative_fare for x in v_block):
-                            to_delete.append(x)
-                        d[tuple(x)] = True
-                        for tmp in v_block:
-                            tmp.has_subject = True
-                        candidates_indexes.remove(i)
-                        break
+                    if not any([y in exclusions for y in [i, x]]):
+                        result.append([i, x])
+                        v_block = [x for x in v_block if not x.is_aux() and x.is_verb()]
+                        if v_block:
+                            verb = v_block[0].lemma
+                            if (
+                                verb in verbi_intransitivi_non_copulativi
+                                or v_block[0].is_passive()
+                            ) and not any(x.is_causative_fare for x in v_block):
+                                to_delete.append(x)
+                            d[tuple(x)] = True
+                            for tmp in v_block:
+                                tmp.has_subject = True
+                            candidates_indexes.remove(i)
+                            break
     for td in to_delete:
         indici_SV.remove(td)
     return result

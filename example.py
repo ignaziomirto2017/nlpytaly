@@ -21,7 +21,7 @@ def entailment_(s1, s2):
         print(f"'{s2}' entails '{s1}'")
     elif res == 3:
         print(
-            f"'{s1}' and '{s2}' do not entail each other. However, both of them yield these semantic roles:"
+            f"'{s1}' and '{s2}' do not entail each other. However, both of them yield the following semantic role(s):"
         )
         for tmp in common:
             print(" - ", tmp)
@@ -33,15 +33,9 @@ if __name__ == "__main__":
         "Le maestre prendono a bacchettate i bambini",
         "I bambini sono presi a bacchettate",
     )
-    entailment_(
-        "Mario ha mangiato la pasta", "Mario canta",
-    )
-    entailment_(
-        "Mario insulta l'amico", "Mario ha preso a parolacce l'amico",
-    )
-    entailment_(
-        "Mario ha preso a cazzotti l'amico", "Mario ha colpito l'amico",
-    )
+    entailment_("Mario ha mangiato la pasta", "Mario canta")
+    entailment_("Mario insulta l'amico", "Mario ha preso a parolacce l'amico")
+    entailment_("Mario ha preso a cazzotti l'amico", "Mario ha colpito l'amico")
     entailment_("Mario ha preso a cazzotti l'amico", "Mario ha preso a pedate l'amico")
     entailment_(
         "Mario ha fatto visitare il bambino dal medico", "Il medico visita il bambino"
